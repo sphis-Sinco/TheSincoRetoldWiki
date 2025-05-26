@@ -25,6 +25,6 @@ function getCharactersContent() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const main = setupBasePage();
+  const main = setupBasePage("../");
   main.innerHTML = getCharactersContent();
 });
