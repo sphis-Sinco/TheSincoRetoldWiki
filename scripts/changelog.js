@@ -33,6 +33,11 @@ export const changelog = [
     text: "Recent Updates section now loads dynamically from a JSON-like array.",
     tag: { text: "Changelog", class: "tag" },
     after: " entries are easier to add."
+  },
+  {
+  changenum: 5,
+  date: "2025-05-26",
+  text: "Updated Contact link in footer to open Gmail compose for sinconsistencia@gmail.com email."
   }
 ];
 
