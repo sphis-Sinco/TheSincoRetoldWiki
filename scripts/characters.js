@@ -1,5 +1,5 @@
 import { setupBasePage } from './basepage.js';
-import { paragraph, strong } from './global.js';
+import { createCardSection, paragraph, strong } from './global.js';
 
 const characters = [
   {
@@ -65,20 +65,19 @@ const characters = [
 ];
 
 function renderCharacterCard(character) {
-  return `
-    <section class="character-card">
-      <h2>${strong(character.name)}</h2>
-      ${character.image ? `<img src="${character.image}" alt="${character.name}" class="character-image">` : ''}
-      ${paragraph(character.description)}
-      <ul>
-        <li>${strong("First Appearance:")} Issue #${character.firstAppearance}</li>
-        <li>${strong("Last Appearance:")} Issue #${character.lastAppearance}</li>
-        ${character.powerLevel ? `<li>${strong("Power Level:")} ${character.powerLevel}</li>` : ''}
-        ${character.birthday ? `<li>${strong("Birthday:")} ${character.birthday}</li>` : ''}
-        ${character.funFacts.length ? `<li>${strong("Fun Facts:")}<ul>${character.funFacts.map(fact => `<li>${fact}</li>`).join('')}</ul></li>` : ''}
-      </ul>
-    </section>
+  const content = `
+    ${character.image ? `<img src="${character.image}" alt="${character.name}" class="character-image">` : ''}
+    ${paragraph(character.description)}
+    <ul>
+      <li>${strong("First Appearance:")} Issue #${character.firstAppearance}</li>
+      <li>${strong("Last Appearance:")} Issue #${character.lastAppearance}</li>
+      ${character.powerLevel ? `<li>${strong("Power Level:")} ${character.powerLevel}</li>` : ''}
+      ${character.birthday ? `<li>${strong("Birthday:")} ${character.birthday}</li>` : ''}
+      ${character.funFacts.length ? `<li>${strong("Fun Facts:")}<ul>${character.funFacts.map(fact => `<li>${fact}</li>`).join('')}</ul></li>` : ''}
+    </ul>
   `;
+
+  return createCardSection(character.name, content);
 }
 
 function getCharactersContent() {
