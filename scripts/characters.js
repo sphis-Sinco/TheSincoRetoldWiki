@@ -2,6 +2,7 @@ const characters = [
   {
     name: "Sinco",
     description: "Teenage Speedster Hero of Tempo City",
+    birthday: "2011-09-19",
     enra: [
       { value: 1080, context: "After training in the afterlife with Karo" },
       { value: 487, context: "Before afterlife training" },
@@ -12,6 +13,7 @@ const characters = [
   {
     name: "TJ",
     description: "Teenage Speedster Hero of Boredom City",
+    birthday: "2011-04-03",
     enra: [
       { value: 320, context: "After gaining powers" },
       { value: 10, context: "Before gaining powers" }
@@ -20,6 +22,7 @@ const characters = [
   {
     name: "Tirok",
     description: "Anti-Hero engineer and scientist",
+    birthday: "2000-04-05",
     enra: [
       { value: 1537, context: "After getting his wish for power" },
       { value: 1, context: "Since birth" }
@@ -28,6 +31,7 @@ const characters = [
   {
     name: "Osin",
     description: "A clone of Sinco made by Tirok",
+    birthday: "2023-10-08",
     enra: [
       { value: 1257, context: "Rage Boost power during Titan-T arc (Volume 4)" },
       { value: 1020, context: "Resting power during Titan-T arc (Volume 4)" },
@@ -47,6 +51,7 @@ const characters = [
   {
     name: "Docaci",
     description: "Speedster mother of Sinco, got her powers drained by Tirok",
+    birthday: "1993-03-14",
     enra: [
       { value: 287, context: "Before her powers were drained" },
       { value: 12, context: "After her powers were drained" }
@@ -55,6 +60,7 @@ const characters = [
   {
     name: "Karo",
     description: "Speedster grandfather of Sinco, the reason Docaci and Sinco are speedsters, Karo is the first person to go super on earth",
+    birthday: "1974-06-23",
     enra: [
       { value: 416, context: "After going super for the first time" },
       { value: 334, context: "After getting speedster powers" },
