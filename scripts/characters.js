@@ -1,47 +1,62 @@
 // characters.js
 
 const characters = [
-  { name: "Sinco", description: "", enra: 0, birthday: "" },
-  { name: "TJ", description: "", enra: 0, birthday: "" },
-  { name: "Tirok", description: "", enra: 0, birthday: "" },
-  { name: "Osin", description: "", enra: 0, birthday: "" },
-  { name: "Crepode", description: "", enra: 0, birthday: "" },
-  { name: "Docaci", description: "", enra: 0, birthday: "" },
-  { name: "Karo", description: "", enra: 0, birthday: "" }
+  {
+    name: "Sinco",
+    description: "Teenage Speedster Hero of Tempo City"
+  },
+  {
+    name: "TJ",
+    description: "Teenage Speedster Hero of Boredom City"
+  },
+  {
+    name: "Tirok",
+    description: "Anti-Hero engineer and scientist"
+  },
+  {
+    name: "Osin",
+    description: "A clone of Sinco made by Tirok"
+  },
+  {
+    name: "Crepode",
+    description: "Famous creator of the Fuerza technique used by Sinco"
+  },
+  {
+    name: "Docaci",
+    description: "Speedster mother of Sinco, got her powers drained by Tirok"
+  },
+  {
+    name: "Karo",
+    description: "Speedster grandfather of Sinco, the reason Docaci and Sinco are speedsters, Karo is the first person to go super on earth"
+  }
 ];
 
-function formatDate(dateString) {
-  if (!dateString) return "Unknown";
-  const date = new Date(dateString);
-  if (isNaN(date)) return "Unknown";
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-}
-
+// Render character cards
 document.addEventListener("DOMContentLoaded", () => {
-  const characterList = document.getElementById("character-list");
-  characterList.innerHTML = ""; // Clear placeholder
+  const container = document.getElementById("character-list");
+  container.innerHTML = "";
 
-  characters.forEach(char => {
+  characters.forEach((char) => {
     const card = document.createElement("li");
-    card.classList.add("character-card");
+    card.className = "character-card";
 
-    const nameElem = document.createElement("h2");
-    nameElem.textContent = char.name;
+    const name = document.createElement("h2");
+    name.textContent = char.name;
 
-    const descElem = document.createElement("p");
-    descElem.textContent = char.description || "Description coming soon.";
+    const description = document.createElement("p");
+    description.textContent = char.description;
 
-    const enraElem = document.createElement("p");
-    enraElem.innerHTML = `<strong>Enra Reading:</strong> ${char.enra > 0 ? char.enra : "Unknown"}`;
+    const enra = document.createElement("p");
+    enra.textContent = `Enra Reading: ${char.enra ?? "Unknown"}`;
 
-    const birthdayElem = document.createElement("p");
-    birthdayElem.innerHTML = `<strong>Birthday:</strong> ${formatDate(char.birthday)}`;
+    const birthday = document.createElement("p");
+    birthday.textContent = `Birthday: ${char.birthday ?? "Unknown"}`;
 
-    card.appendChild(nameElem);
-    card.appendChild(descElem);
-    card.appendChild(enraElem);
-    card.appendChild(birthdayElem);
+    card.appendChild(name);
+    card.appendChild(description);
+    card.appendChild(enra);
+    card.appendChild(birthday);
 
-    characterList.appendChild(card);
+    container.appendChild(card);
   });
 });
