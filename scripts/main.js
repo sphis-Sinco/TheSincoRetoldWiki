@@ -2,7 +2,13 @@ import {
   createHeader,
   createNavbar,
   createCardSection,
-  createFooter
+  createFooter,
+  strong,
+  italic,
+  span,
+  link,
+  paragraph,
+  list
 } from './global.js';
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -23,21 +29,23 @@ document.addEventListener("DOMContentLoaded", () => {
   ]);
 
   main.innerHTML =
-    createCardSection("Welcome to The Sinco Retold Wiki", `
-      <p>This official encyclopedia documents the lore, characters, events, and universe of <strong>Sinco Retold</strong>.
-      Whether you're a new reader or a returning veteran, this wiki will help you dive deeper into the story.</p>
-    `) +
-    createCardSection("Featured Article", `
-      <p>Nothing</p>
-      <a href="#">Read more...</a>
-    `) +
-    createCardSection("Recent Updates", `
-      <ul>
-        <li><strong>May 25:</strong> Added new details to the "Sky Reavers" faction page.</li>
-        <li><strong>May 20:</strong> Timeline updated with entries from the Dawnfall Arc.</li>
-        <li><strong>May 18:</strong> New artwork added to the character profile of Lysira.</li>
-      </ul>
-    `);
+    createCardSection("Welcome to The Sinco Retold Wiki", paragraph(
+      "This fan-maintained encyclopedia documents the lore, characters, events, and universe of",
+      strong("Sinco Retold") + ".",
+      "Whether you're a new reader or a returning veteran, this wiki will help you dive deeper into the story."
+    )) +
+
+    createCardSection("Featured Article", paragraph(
+      strong("The Siege of Halden’s Rise"),
+      "— One of the most pivotal battles in Sinco history. Learn how the conflict shaped the political landscape of the Third Age.",
+      link("Read more...", "#")
+    )) +
+
+    createCardSection("Recent Updates", list([
+      strong("May 25:") + " Added new details to the " + span("Sky Reavers", "tag") + " faction page.",
+      strong("May 20:") + " Timeline updated with entries from the Dawnfall Arc.",
+      strong("May 18:") + " New artwork added to the character profile of Lysira."
+    ]));
 
   footer.innerHTML = createFooter(2025, "The Sinco Retold Wiki");
 });
