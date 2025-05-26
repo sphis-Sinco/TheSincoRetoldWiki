@@ -1,7 +1,15 @@
 // scripts/basepage.js
 import { createHeader, createNavbar, createFooter } from './global.js';
 
-export function setupBasePage(navItems) {
+export const navItems = [
+  { href: "./index.html", label: "Home" },
+  { href: "./pages/characters.html", label: "Characters" },
+  { href: "./pages/timeline.html", label: "Timeline" },
+  { href: "./pages/locations.html", label: "Locations" },
+  { href: "./pages/community.html", label: "Community" }
+];
+
+export function setupBasePage() {
   const header = document.getElementById("header");
   const navbar = document.getElementById("navbar");
   const footer = document.getElementById("footer");
