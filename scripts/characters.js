@@ -4,65 +4,74 @@ import { createCardSection, paragraph, strong } from './global.js';
 const characters = [
   {
     name: "Sinco",
-    description: "Teenage speedster protecting Tempo City by any means necessary.",
+    description: "Teenager speedster protecting Tempo City by any means necessary.",
+    powerLevel: null,
+    image: "content/characters/sinco.jpg",
     firstAppearance: 1,
-    lastAppearance: 42,
-    powerLevel: "",
-    birthday: "",
-    funFacts: [],
-    image: ""
+    lastAppearance: 10,
+    birthday: "", // add in YYYY-MM-DD format if known
+    funFacts: [
+      "Fastest in Tempo City.",
+      "Never gives up."
+    ]
   },
   {
     name: "TJ",
-    description: "Best friend of Sinco; defends Boredom City.",
-    firstAppearance: 3,
-    lastAppearance: 40,
-    powerLevel: "",
+    description: "Best-friend of Sinco, another teenager speedster, protecting Boredom City instead.",
+    powerLevel: null,
+    image: "content/characters/tj.jpg",
+    firstAppearance: 1,
+    lastAppearance: 9,
     birthday: "",
-    funFacts: [],
-    image: ""
+    funFacts: []
   },
   {
     name: "Tirok",
-    description: "Anti-hero engineer and scientist focused on his own ideals.",
+    description: "Anti-Hero engineer scientist focused on his own beliefs.",
+    powerLevel: null,
+    image: "content/characters/tirok.jpg",
     firstAppearance: 2,
-    lastAppearance: 41,
-    powerLevel: "",
+    lastAppearance: 11,
     birthday: "",
-    funFacts: [],
-    image: ""
+    funFacts: ["Created Sinco’s clone."]
   },
   {
     name: "Osin",
     description: "Clone of Sinco made by Tirok, treats Tirok like a father figure.",
-    firstAppearance: 5,
-    lastAppearance: 42,
-    powerLevel: "",
+    powerLevel: null,
+    image: "content/characters/osin.jpg",
+    firstAppearance: 3,
+    lastAppearance: 11,
     birthday: "",
-    funFacts: [],
-    image: ""
+    funFacts: []
   },
   {
     name: "Docaci",
     description: "Mother of Sinco, speedster who got her powers disabled by Tirok.",
-    firstAppearance: 2,
-    lastAppearance: 39,
-    powerLevel: "",
+    powerLevel: null,
+    image: "content/characters/docaci.jpg",
+    firstAppearance: 1,
+    lastAppearance: 8,
     birthday: "",
-    funFacts: [],
-    image: ""
+    funFacts: []
   },
   {
     name: "Karo",
-    description: "Sinco's grandfather; the first person to turn super on Earth.",
-    firstAppearance: 6,
-    lastAppearance: 38,
-    powerLevel: "",
+    description: "Sinco's grandfather, speedster, the first person to turn super on Earth, and the reason Docaci and Sinco have speedster powers now.",
+    powerLevel: null,
+    image: "content/characters/karo.jpg",
+    firstAppearance: 0,
+    lastAppearance: 5,
     birthday: "",
-    funFacts: [],
-    image: ""
+    funFacts: []
   }
 ];
+
+function formatDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+}
 
 function renderCharacterCard(character) {
   const content = `
@@ -71,9 +80,9 @@ function renderCharacterCard(character) {
     <ul>
       <li>${strong("First Appearance:")} Issue #${character.firstAppearance}</li>
       <li>${strong("Last Appearance:")} Issue #${character.lastAppearance}</li>
-      ${character.powerLevel ? `<li>${strong("Power Level:")} ${character.powerLevel}</li>` : ''}
-      ${character.birthday ? `<li>${strong("Birthday:")} ${character.birthday}</li>` : ''}
-      ${character.funFacts.length ? `<li>${strong("Fun Facts:")}<ul>${character.funFacts.map(fact => `<li>${fact}</li>`).join('')}</ul></li>` : ''}
+      ${typeof character.powerLevel === 'number' ? `<li>${strong("Power Level:")} ${character.powerLevel}</li>` : ''}
+      ${character.birthday ? `<li>${strong("Birthday:")} ${formatDate(character.birthday)}</li>` : ''}
+      ${character.funFacts && character.funFacts.length ? `<li>${strong("Fun Facts:")}<ul>${character.funFacts.map(fact => `<li>${fact}</li>`).join('')}</ul></li>` : ''}
     </ul>
   `;
 
@@ -82,7 +91,7 @@ function renderCharacterCard(character) {
 
 function getCharactersContent() {
   return `
-    <h1>${strong("Characters")}</h1>
+    <h1>Characters</h1>
     ${characters.map(renderCharacterCard).join('')}
   `;
 }
