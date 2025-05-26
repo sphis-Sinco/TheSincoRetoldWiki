@@ -7,3 +7,20 @@ nav a {
 nav a:last-child {
   margin-right: 0;
 }
+
+.character-image {
+  width: 200px;
+  height: auto;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.filters {
+  margin: 1rem 0;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 5px;
+}
