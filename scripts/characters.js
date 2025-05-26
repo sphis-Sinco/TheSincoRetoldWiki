@@ -1,5 +1,5 @@
 import { setupBasePage } from './basepage.js';
-import { createCardSection, paragraph, strong } from './global.js';
+import { createCardSection, paragraph, strong, createElement } from './global.js';
 
 const characters = [
   {
@@ -23,7 +23,44 @@ const characters = [
     birthday: "",
     funFacts: []
   },
-  // Add the rest of the characters here
+  {
+    name: "Tirok",
+    description: "Anti-Hero engineer scientist focused on his own beliefs.",
+    powerLevel: 1,
+    firstAppearance: 1,
+    lastAppearance: 85,
+    birthday: "2000-04-05",
+    funFacts: ["Wishes for his own power"]
+  },
+  {
+    name: "Osin",
+    description: "Clone of Sinco made by Tirok, treats Tirok like a father figure.",
+    powerLevel: 1020,
+    firstAppearance: 1,
+    lastAppearance: 85,
+    birthday: "2023-10-08",
+    funFacts: []
+  },
+  {
+    name: "Docaci",
+    description: "Mother of Sinco, speedster who got her powers disabled by Tirok.",
+    powerLevel: null,
+    firstAppearance: 24,
+    lastAppearance: 55,
+    birthday: "1993-03-14",
+    funFacts: []
+  },
+  {
+    name: "Karo",
+    description: "Sinco's grandfather, speedster, the first person to turn super on Earth, and the reason Docaci and Sinco have speedster powers now.",
+    powerLevel: null,
+    firstAppearance: 47,
+    lastAppearance: 61,
+    birthday: "1974-06-23",
+    funFacts: [
+      "Made for a prequel book that tells the story of the first person to go super"
+    ]
+  }
 ];
 
 function formatDate(dateString) {
@@ -43,7 +80,10 @@ function renderCharacterCard(character) {
       ${character.funFacts && character.funFacts.length ? `
         <li>
           ${strong("Fun Facts:")}
-          <ul>${character.funFacts.map(fact => `<li>${fact}</li>`).join('')}</ul>
+          <details>
+            <summary>Click to expand</summary>
+            <ul>${character.funFacts.map(fact => `<li>${fact}</li>`).join('')}</ul>
+          </details>
         </li>
       ` : ''}
     </ul>
@@ -53,7 +93,13 @@ function renderCharacterCard(character) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const main = setupBasePage("../");
-  characters.forEach(char => {
-    main.appendChild(renderCharacterCard(char));
+  const heading = createElement("h1", {}, "Characters");
+  const container = createElement("div", { class: "character-container" });
+
+  characters.forEach(character => {
+    container.appendChild(renderCharacterCard(character));
   });
+
+  main.appendChild(heading);
+  main.appendChild(container);
 });
