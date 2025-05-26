@@ -1,5 +1,5 @@
 import { setupBasePage } from './basepage.js';
-import { createCardSection, paragraph, strong, createElement } from './global.js';
+import { paragraph, strong, createElement, createCardSection } from './global.js';
 
 const characters = [
   {
@@ -9,10 +9,7 @@ const characters = [
     firstAppearance: 1,
     lastAppearance: 85,
     birthday: "2011-09-19",
-    funFacts: [
-      "Based off his creator heavily",
-      "Died twice, both times getting some kind of special training"
-    ]
+    funFacts: ["Based off his creator heavily", "Died twice, both times getting some kind of special training"]
   },
   {
     name: "TJ",
@@ -20,7 +17,7 @@ const characters = [
     powerLevel: null,
     firstAppearance: 1,
     lastAppearance: 30,
-    birthday: "",
+    birthday: "2011-04-03",
     funFacts: []
   },
   {
@@ -57,16 +54,13 @@ const characters = [
     firstAppearance: 47,
     lastAppearance: 61,
     birthday: "1974-06-23",
-    funFacts: [
-      "Made for a prequel book that tells the story of the first person to go super"
-    ]
+    funFacts: ["Made for a prequel book that tells the story of the first person to go super"]
   }
 ];
 
 function formatDate(dateString) {
   if (!dateString) return '';
-  const date = new Date(dateString);
-  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  return new Date(dateString).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 function renderCharacterCard(character) {
@@ -90,9 +84,7 @@ function renderCharacterCard(character) {
     lines.push('<li>');
     lines.push(strong("Fun Facts:"));
     lines.push('<details><summary>Click to expand</summary><ul>');
-    character.funFacts.forEach(fact => {
-      lines.push(`<li>${fact}</li>`);
-    });
+    character.funFacts.forEach(fact => lines.push(`<li>${fact}</li>`));
     lines.push('</ul></details></li>');
   }
   
@@ -103,13 +95,10 @@ function renderCharacterCard(character) {
 
 document.addEventListener("DOMContentLoaded", () => {
   const main = setupBasePage("../");
-  const heading = createElement("h1", {}, "Characters");
-  const container = createElement("div", { class: "character-container" });
+
+  main.appendChild(createElement("h1", {}, "Characters"));
 
   characters.forEach(character => {
-    container.appendChild(renderCharacterCard(character));
+    main.appendChild(renderCharacterCard(character));
   });
-
-  main.appendChild(heading);
-  main.appendChild(container);
 });
