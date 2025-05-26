@@ -58,3 +58,19 @@ footer {
   color: white;
   padding: 1rem;
 }
+
+#character-list ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.character-card {
+  background-color: #f0f0f0;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
+}
