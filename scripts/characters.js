@@ -70,7 +70,6 @@ function formatDate(dateString) {
 }
 
 function renderCharacterCard(character) {
-function renderCharacterCard(character) {
   const lines = [];
 
   lines.push(paragraph(character.description));
