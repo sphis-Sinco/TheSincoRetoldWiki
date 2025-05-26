@@ -27,13 +27,13 @@ document.addEventListener("DOMContentLoaded", () => {
   ]);
 
   main.innerHTML =
-    createCardSection("Welcome to The Sinco Retold Wiki", paragraph(
-      "This is the official, fan-maintained encyclopedia documenting the lore, characters, and world of",
-      strong("Sinco Retold") + ".",
-      "Whether you're new or returning, this archive helps you dive deeper into the mythos."
-    )) +
-    createCardSection("Featured Article", renderFeaturedArticle()) +
-    createCardSection("Recent Updates", renderChangelog());
+  createCardSection("Welcome to The Sinco Retold Wiki", paragraph(
+    "This is the official encyclopedia documenting the lore, characters, and world of",
+    strong("Sinco Retold") + ".",
+    "Whether you're new or returning, this archive helps you dive deeper into the mythos."
+  )) +
+  createCardSection("Featured Article", renderFeaturedArticle()) +
+  // createCardSection("Recent Updates", renderChangelog());
 
   footer.innerHTML = createFooter(2025, "The Sinco Retold Wiki");
 });
