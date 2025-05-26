@@ -16,19 +16,14 @@ function renderCharacterCard(character) {
   `;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const navItems = [
-    { href: "../index.html", label: "Home" },
-    { href: "./characters.html", label: "Characters" },
-    { href: "./timeline.html", label: "Timeline" },
-    { href: "./locations.html", label: "Locations" },
-    { href: "./community.html", label: "Community" }
-  ];
-
-  const main = setupBasePage(navItems);
-
-  main.innerHTML = `
+function getCharactersContent() {
+  return `
     <h1>Characters</h1>
     ${characters.map(renderCharacterCard).join('')}
   `;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const main = setupBasePage();
+  main.innerHTML = getCharactersContent();
 });
