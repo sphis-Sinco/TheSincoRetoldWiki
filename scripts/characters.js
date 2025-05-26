@@ -3,7 +3,8 @@ const characters = [
     name: "Sinco",
     description: "Teenage Speedster Hero of Tempo City",
     enra: [
-      { value: 1080, context: "After training in the afterlife with Karo" }
+      { value: 1080, context: "After training in the afterlife with Karo" },
+      { value: 400, context: "Before unlocking his full potential" }
     ]
   },
   {
@@ -52,7 +53,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (Array.isArray(char.enra) && char.enra.length > 0) {
       enraBlock.appendChild(enraTitle);
-      char.enra.forEach((reading) => {
+
+      // Sort by value descending
+      const sortedReadings = char.enra.sort((a, b) => b.value - a.value);
+
+      sortedReadings.forEach((reading) => {
         const readingText = document.createElement("p");
         readingText.textContent = `• ${reading.value} (${reading.context})`;
         enraBlock.appendChild(readingText);
