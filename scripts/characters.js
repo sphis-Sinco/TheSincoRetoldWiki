@@ -1,5 +1,5 @@
 import { setupBasePage } from './basepage.js';
-import { createCardSection, paragraph, strong } from './global.js';
+import { createCardSection, paragraph, strong, createElement } from './global.js';
 
 const characters = [
   {
@@ -84,20 +84,78 @@ function renderCharacterCard(character) {
       <li>${strong("Last Appearance:")} Issue #${character.lastAppearance}</li>
       ${typeof character.powerLevel === 'number' ? `<li>${strong("Power Level:")} ${character.powerLevel}</li>` : ''}
       ${character.birthday ? `<li>${strong("Birthday:")} ${formatDate(character.birthday)}</li>` : ''}
-      ${character.funFacts && character.funFacts.length ? `<li>${strong("Fun Facts:")}<ul>${character.funFacts.map(fact => `<li>${fact}</li>`).join('')}</ul></li>` : ''}
+      ${character.funFacts && character.funFacts.length ? `
+        <li>
+          ${strong("Fun Facts:")}
+          <details>
+            <summary>Click to expand</summary>
+            <ul>${character.funFacts.map(fact => `<li>${fact}</li>`).join('')}</ul>
+          </details>
+        </li>
+      ` : ''}
     </ul>
   `;
   return createCardSection(character.name, content);
 }
 
-function getCharactersContent() {
-  return `
-    <h1>Characters</h1>
-    ${characters.map(renderCharacterCard).join('')}
-  `;
+function getCharactersContent(charactersToRender) {
+  return charactersToRender.map(renderCharacterCard).join('');
+}
+
+function createFilterControls(onChange) {
+  const wrapper = createElement('div', { class: 'filters' });
+
+  const select = createElement('select');
+  const options = [
+    { label: "Sort by...", value: "" },
+    { label: "Power Level (High to Low)", value: "powerDesc" },
+    { label: "Power Level (Low to High)", value: "powerAsc" },
+    { label: "First Appearance", value: "firstAppearance" },
+    { label: "Last Appearance", value: "lastAppearance" }
+  ];
+  options.forEach(opt => {
+    const option = createElement('option', { value: opt.value }, opt.label);
+    select.appendChild(option);
+  });
+
+  select.addEventListener('change', () => onChange(select.value));
+
+  wrapper.appendChild(select);
+  return wrapper;
+}
+
+function sortCharacters(type) {
+  let sorted = [...characters];
+  switch (type) {
+    case "powerDesc":
+      sorted.sort((a, b) => (b.powerLevel || 0) - (a.powerLevel || 0));
+      break;
+    case "powerAsc":
+      sorted.sort((a, b) => (a.powerLevel || Infinity) - (b.powerLevel || Infinity));
+      break;
+    case "firstAppearance":
+      sorted.sort((a, b) => a.firstAppearance - b.firstAppearance);
+      break;
+    case "lastAppearance":
+      sorted.sort((a, b) => a.lastAppearance - b.lastAppearance);
+      break;
+  }
+  return sorted;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const main = setupBasePage("../");
-  main.innerHTML = getCharactersContent();
+
+  const heading = createElement("h1", {}, "Characters");
+  const controls = createFilterControls((sortType) => {
+    const sorted = sortCharacters(sortType);
+    characterContainer.innerHTML = getCharactersContent(sorted);
+  });
+
+  const characterContainer = createElement("div", { class: "character-container" });
+  characterContainer.innerHTML = getCharactersContent(characters);
+
+  main.appendChild(heading);
+  main.appendChild(controls);
+  main.appendChild(characterContainer);
 });
