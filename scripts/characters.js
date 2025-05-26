@@ -3,32 +3,63 @@ const characters = [
     name: "Sinco",
     description: "Teenage Speedster Hero of Tempo City",
     enra: [
-      { value: 1080, context: "After training in the afterlife with Karo" }
+      { value: 1080, context: "After training in the afterlife with Karo" },
+      { value: 487, context: "Before afterlife training" },
+      { value: 380, context: "After training with Crepode for the first time" },
+      { value: 295, context: "Before training with Crepode for the first time" }
     ]
   },
   {
     name: "TJ",
-    description: "Teenage Speedster Hero of Boredom City"
+    description: "Teenage Speedster Hero of Boredom City",
+    enra: [
+      { value: 320, context: "After gaining powers" },
+      { value: 10, context: "Before gaining powers" }
+    ]
   },
   {
     name: "Tirok",
-    description: "Anti-Hero engineer and scientist"
+    description: "Anti-Hero engineer and scientist",
+    enra: [
+      { value: 1537, context: "After getting his wish for power" },
+      { value: 1, context: "Since birth" }
+    ]
   },
   {
     name: "Osin",
-    description: "A clone of Sinco made by Tirok"
+    description: "A clone of Sinco made by Tirok",
+    enra: [
+      { value: 1257, context: "Rage Boost power during Titan-T arc (Volume 4)" },
+      { value: 1020, context: "Resting power during Titan-T arc (Volume 4)" },
+      { value: 855, context: "During Squad 2 Invasion with a Rage boost" },
+      { value: 630, context: "After Squad 2 Invasion is over" },
+      { value: 570, context: "During Squad 2 Invasion" },
+      { value: 313, context: "In creation" }
+    ]
   },
   {
     name: "Crepode",
-    description: "Famous creator of the Fuerza technique used by Sinco"
+    description: "Famous creator of the Fuerza technique used by Sinco",
+    enra: [
+      { value: 453, context: "Since Sinco met him" }
+    ]
   },
   {
     name: "Docaci",
-    description: "Speedster mother of Sinco, got her powers drained by Tirok"
+    description: "Speedster mother of Sinco, got her powers drained by Tirok",
+    enra: [
+      { value: 287, context: "Before her powers were drained" },
+      { value: 12, context: "After her powers were drained" }
+    ]
   },
   {
     name: "Karo",
-    description: "Speedster grandfather of Sinco, the reason Docaci and Sinco are speedsters, Karo is the first person to go super on earth"
+    description: "Speedster grandfather of Sinco, the reason Docaci and Sinco are speedsters, Karo is the first person to go super on earth",
+    enra: [
+      { value: 416, context: "After going super for the first time" },
+      { value: 334, context: "After getting speedster powers" },
+      { value: 2, context: "Before getting speedster powers" }
+    ]
   }
 ];
 
@@ -53,9 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (Array.isArray(char.enra) && char.enra.length > 0) {
       enraBlock.appendChild(enraTitle);
 
-      // Sort by value descending
       const sortedReadings = char.enra.sort((a, b) => b.value - a.value);
-
       sortedReadings.forEach((reading) => {
         const readingText = document.createElement("p");
         readingText.textContent = `• ${reading.value} (${reading.context})`;
