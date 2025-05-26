@@ -1,3 +1,5 @@
+// characters.js
+
 const characters = [
   {
     name: "Sinco",
@@ -69,45 +71,12 @@ const characters = [
   }
 ];
 
-function applyFilters() {
-  const nameQuery = document.getElementById("nameFilter").value.toLowerCase();
-  const minEnra = parseInt(document.getElementById("minEnraFilter").value) || 0;
-  const bornAfter = new Date(document.getElementById("birthdayAfterFilter").value);
-  const bornBefore = new Date(document.getElementById("birthdayBeforeFilter").value);
-
-  const filtered = characters.filter((char) => {
-    const matchesName = char.name.toLowerCase().includes(nameQuery);
-
-    const enraReadings = Array.isArray(char.enra) ? char.enra : [];
-    const highestEnra = enraReadings.length
-      ? Math.max(...enraReadings.map((r) => r.value))
-      : 0;
-    const matchesEnra = highestEnra >= minEnra;
-
-    const bday = new Date(char.birthday);
-    const matchesBirthdayAfter = isNaN(bornAfter.getTime()) || bday >= bornAfter;
-    const matchesBirthdayBefore = isNaN(bornBefore.getTime()) || bday <= bornBefore;
-
-    return matchesName && matchesEnra && matchesBirthdayAfter && matchesBirthdayBefore;
-  });
-
-  renderCharacters(filtered);
-}
-
-function resetFilters() {
-  document.getElementById("nameFilter").value = "";
-  document.getElementById("minEnraFilter").value = "";
-  document.getElementById("birthdayAfterFilter").value = "";
-  document.getElementById("birthdayBeforeFilter").value = "";
-
-  renderCharacters(characters);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
+// Render characters into the page
+function renderCharacters(list) {
   const container = document.getElementById("character-list");
   container.innerHTML = "";
 
-  characters.forEach((char) => {
+  list.forEach((char) => {
     const card = document.createElement("li");
     card.className = "character-card";
 
@@ -120,11 +89,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const enraBlock = document.createElement("div");
     const enraTitle = document.createElement("p");
     enraTitle.textContent = "Enra Readings:";
+    enraBlock.appendChild(enraTitle);
 
     if (Array.isArray(char.enra) && char.enra.length > 0) {
-      enraBlock.appendChild(enraTitle);
-
-      const sortedReadings = char.enra.sort((a, b) => b.value - a.value);
+      // Sort descending by value without mutating original array
+      const sortedReadings = [...char.enra].sort((a, b) => b.value - a.value);
       sortedReadings.forEach((reading) => {
         const readingText = document.createElement("p");
         readingText.textContent = `• ${reading.value} (${reading.context})`;
@@ -132,12 +101,12 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     } else {
       const noEnra = document.createElement("p");
-      noEnra.textContent = "Enra Readings: Unknown";
+      noEnra.textContent = "Unknown";
       enraBlock.appendChild(noEnra);
     }
 
     const birthday = document.createElement("p");
-    birthday.textContent = `Birthday: ${char.birthday ?? "Unknown"}`;
+    birthday.textContent = `Birthday: ${char.birthday || "Unknown"}`;
 
     card.appendChild(name);
     card.appendChild(description);
@@ -146,4 +115,64 @@ document.addEventListener("DOMContentLoaded", () => {
 
     container.appendChild(card);
   });
+}
+
+// Filter logic for the character list
+function applyFilters() {
+  const nameQuery = document.getElementById("nameFilter").value.trim().toLowerCase();
+  const minEnraInput = document.getElementById("minEnraFilter").value.trim();
+  const minEnra = minEnraInput === "" ? 0 : parseInt(minEnraInput, 10);
+  const bornAfterInput = document.getElementById("birthdayAfterFilter").value;
+  const bornBeforeInput = document.getElementById("birthdayBeforeFilter").value;
+  const bornAfter = bornAfterInput ? new Date(bornAfterInput) : null;
+  const bornBefore = bornBeforeInput ? new Date(bornBeforeInput) : null;
+
+  const filtered = characters.filter((char) => {
+    // Check name
+    if (nameQuery && !char.name.toLowerCase().includes(nameQuery)) return false;
+
+    // Check min Enra reading (highest value)
+    const enraValues = char.enra?.map(r => r.value) || [];
+    const highestEnra = enraValues.length > 0 ? Math.max(...enraValues) : 0;
+    if (highestEnra < minEnra) return false;
+
+    // Check birthday after
+    if (bornAfter && char.birthday) {
+      const bday = new Date(char.birthday);
+      if (bday < bornAfter) return false;
+    } else if (bornAfter && !char.birthday) {
+      // If no birthday info but filtering by date, exclude
+      return false;
+    }
+
+    // Check birthday before
+    if (bornBefore && char.birthday) {
+      const bday = new Date(char.birthday);
+      if (bday > bornBefore) return false;
+    } else if (bornBefore && !char.birthday) {
+      return false;
+    }
+
+    return true;
+  });
+
+  renderCharacters(filtered);
+}
+
+// Reset filters to defaults and show all characters
+function resetFilters() {
+  document.getElementById("nameFilter").value = "";
+  document.getElementById("minEnraFilter").value = "";
+  document.getElementById("birthdayAfterFilter").value = "";
+  document.getElementById("birthdayBeforeFilter").value = "";
+
+  renderCharacters(characters);
+}
+
+// Initialize rendering and event listeners on page load
+document.addEventListener("DOMContentLoaded", () => {
+  renderCharacters(characters);
+
+  document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
+  document.getElementById("resetFiltersBtn").addEventListener("click", resetFilters);
 });
