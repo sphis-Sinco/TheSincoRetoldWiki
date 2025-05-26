@@ -6,7 +6,6 @@ const characters = [
     name: "Sinco",
     description: "Teenager speedster protecting Tempo City by any means necessary.",
     powerLevel: 1080,
-    image: "content/characters/sinco.png",
     firstAppearance: 1,
     lastAppearance: 85,
     birthday: "2011-09-19",
@@ -19,7 +18,6 @@ const characters = [
     name: "TJ",
     description: "Best-friend of Sinco, another teenager speedster, protecting Boredom City instead.",
     powerLevel: null,
-    image: "content/characters/tj.png",
     firstAppearance: 1,
     lastAppearance: 30,
     birthday: "",
@@ -29,7 +27,6 @@ const characters = [
     name: "Tirok",
     description: "Anti-Hero engineer scientist focused on his own beliefs.",
     powerLevel: 1,
-    image: "content/characters/tirok.png",
     firstAppearance: 1,
     lastAppearance: 85,
     birthday: "2000-04-05",
@@ -39,7 +36,6 @@ const characters = [
     name: "Osin",
     description: "Clone of Sinco made by Tirok, treats Tirok like a father figure.",
     powerLevel: 1020,
-    image: "content/characters/osin.png",
     firstAppearance: 1,
     lastAppearance: 85,
     birthday: "2023-10-08",
@@ -49,7 +45,6 @@ const characters = [
     name: "Docaci",
     description: "Mother of Sinco, speedster who got her powers disabled by Tirok.",
     powerLevel: null,
-    image: "content/characters/docaci.png",
     firstAppearance: 24,
     lastAppearance: 55,
     birthday: "1993-03-14",
@@ -59,7 +54,6 @@ const characters = [
     name: "Karo",
     description: "Sinco's grandfather, speedster, the first person to turn super on Earth, and the reason Docaci and Sinco have speedster powers now.",
     powerLevel: null,
-    image: "content/characters/karo.png",
     firstAppearance: 47,
     lastAppearance: 61,
     birthday: "1974-06-23",
@@ -77,7 +71,6 @@ function formatDate(dateString) {
 
 function renderCharacterCard(character) {
   const content = `
-    ${character.image ? `<img src="${character.image}" alt="${character.name}" class="character-image">` : ''}
     ${paragraph(character.description)}
     <ul>
       <li>${strong("First Appearance:")} Issue #${character.firstAppearance}</li>
