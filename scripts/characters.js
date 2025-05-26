@@ -70,25 +70,36 @@ function formatDate(dateString) {
 }
 
 function renderCharacterCard(character) {
-  const content = `
-    ${paragraph(character.description)}
-    <ul>
-      <li>${strong("First Appearance:")} Issue #${character.firstAppearance}</li>
-      <li>${strong("Last Appearance:")} Issue #${character.lastAppearance}</li>
-      ${typeof character.powerLevel === 'number' ? `<li>${strong("Power Level:")} ${character.powerLevel}</li>` : ''}
-      ${character.birthday ? `<li>${strong("Birthday:")} ${formatDate(character.birthday)}</li>` : ''}
-      ${character.funFacts && character.funFacts.length ? `
-        <li>
-          ${strong("Fun Facts:")}
-          <details>
-            <summary>Click to expand</summary>
-            <ul>${character.funFacts.map(fact => `<li>${fact}</li>`).join('')}</ul>
-          </details>
-        </li>
-      ` : ''}
-    </ul>
-  `;
-  return createCardSection(character.name, content);
+function renderCharacterCard(character) {
+  const lines = [];
+
+  lines.push(paragraph(character.description));
+
+  lines.push('<ul>');
+  lines.push(`<li>${strong("First Appearance:")} Issue #${character.firstAppearance}</li>`);
+  lines.push(`<li>${strong("Last Appearance:")} Issue #${character.lastAppearance}</li>`);
+  
+  if (typeof character.powerLevel === 'number') {
+    lines.push(`<li>${strong("Power Level:")} ${character.powerLevel}</li>`);
+  }
+  
+  if (character.birthday) {
+    lines.push(`<li>${strong("Birthday:")} ${formatDate(character.birthday)}</li>`);
+  }
+  
+  if (character.funFacts && character.funFacts.length) {
+    lines.push('<li>');
+    lines.push(strong("Fun Facts:"));
+    lines.push('<details><summary>Click to expand</summary><ul>');
+    character.funFacts.forEach(fact => {
+      lines.push(`<li>${fact}</li>`);
+    });
+    lines.push('</ul></details></li>');
+  }
+  
+  lines.push('</ul>');
+
+  return createCardSection(character.name, lines.join(''));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
