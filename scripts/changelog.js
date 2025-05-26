@@ -36,13 +36,13 @@ addChanges("2025-05-26", [
 export function renderChangelog() {
   const dates = Object.keys(changelog).sort((a, b) => b.localeCompare(a));
   return dates.map(date => `
-    <h3>${date}</h3>
+    <h3>${strong(date)}</h3>
     <ul>
       ${changelog[date]
         .sort((a, b) => b.changenum - a.changenum)
         .map(entry => {
           const tag = entry.tag ? span(entry.tag.text, entry.tag.class) : "";
-          return `<li>${strong("•")} ${entry.text}${tag}${entry.after || ""}</li>`;
+          return `<li>• ${entry.text}${tag}${entry.after || ""}</li>`;
         }).join('\n')}
     </ul>
   `).join('\n');
