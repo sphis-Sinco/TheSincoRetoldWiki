@@ -10,20 +10,24 @@ const navItemsBase = [
 ];
 
 export function setupBasePage(basePath = "") {
-  const header = document.getElementById("header");
-  const navbar = document.getElementById("navbar");
-  const footer = document.getElementById("footer");
+  try {
+    const header = document.getElementById("header");
+    const navbar = document.getElementById("navbar");
+    const footer = document.getElementById("footer");
 
-  header.innerHTML = createHeader("The Sinco Retold Wiki", "The official site and definitive lore archive.");
+    header.innerHTML = createHeader("The Sinco Retold Wiki", "The official site and definitive lore archive.");
 
-  // Adjust hrefs by prefixing basePath
-  const navItems = navItemsBase.map(item => ({
-    href: basePath + item.href,
-    label: item.label
-  }));
+    const navItems = navItemsBase.map(item => ({
+      href: basePath + item.href,
+      label: item.label
+    }));
 
-  navbar.innerHTML = createNavbar(navItems);
-  footer.innerHTML = createFooter(new Date().getFullYear(), "The Sinco Retold Wiki");
+    navbar.innerHTML = createNavbar(navItems);
+    footer.innerHTML = createFooter(new Date().getFullYear(), "The Sinco Retold Wiki");
 
-  return document.getElementById("main-content");
+    return document.getElementById("main-content");
+  } catch (error) {
+    document.body.innerHTML = `<pre style="color: red; white-space: pre-wrap;">Error setting up base page:\n${error.stack || error.message}</pre>`;
+    throw error;
+  }
 }
