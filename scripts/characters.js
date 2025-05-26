@@ -69,6 +69,40 @@ const characters = [
   }
 ];
 
+function applyFilters() {
+  const nameQuery = document.getElementById("nameFilter").value.toLowerCase();
+  const minEnra = parseInt(document.getElementById("minEnraFilter").value) || 0;
+  const bornAfter = new Date(document.getElementById("birthdayAfterFilter").value);
+  const bornBefore = new Date(document.getElementById("birthdayBeforeFilter").value);
+
+  const filtered = characters.filter((char) => {
+    const matchesName = char.name.toLowerCase().includes(nameQuery);
+
+    const enraReadings = Array.isArray(char.enra) ? char.enra : [];
+    const highestEnra = enraReadings.length
+      ? Math.max(...enraReadings.map((r) => r.value))
+      : 0;
+    const matchesEnra = highestEnra >= minEnra;
+
+    const bday = new Date(char.birthday);
+    const matchesBirthdayAfter = isNaN(bornAfter.getTime()) || bday >= bornAfter;
+    const matchesBirthdayBefore = isNaN(bornBefore.getTime()) || bday <= bornBefore;
+
+    return matchesName && matchesEnra && matchesBirthdayAfter && matchesBirthdayBefore;
+  });
+
+  renderCharacters(filtered);
+}
+
+function resetFilters() {
+  document.getElementById("nameFilter").value = "";
+  document.getElementById("minEnraFilter").value = "";
+  document.getElementById("birthdayAfterFilter").value = "";
+  document.getElementById("birthdayBeforeFilter").value = "";
+
+  renderCharacters(characters);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("character-list");
   container.innerHTML = "";
@@ -112,83 +146,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
     container.appendChild(card);
   });
-});
-
-function applyFilters() {
-  const nameFilter = document.getElementById("nameFilter").value.toLowerCase();
-  const minEnra = parseInt(document.getElementById("minEnraFilter").value);
-  const bdayAfter = document.getElementById("birthdayAfterFilter").value;
-  const bdayBefore = document.getElementById("birthdayBeforeFilter").value;
-
-  const container = document.getElementById("character-list");
-  container.innerHTML = "";
-
-  characters.forEach((char) => {
-    const matchesName = char.name.toLowerCase().includes(nameFilter);
-
-    const maxEnra = (char.enra && char.enra.length)
-      ? Math.max(...char.enra.map(r => r.value))
-      : null;
-    const matchesEnra = isNaN(minEnra) || (maxEnra !== null && maxEnra >= minEnra);
-
-    const charBirthday = char.birthday ?? null;
-    const matchesBirthdayAfter = !bdayAfter || (charBirthday && charBirthday >= bdayAfter);
-    const matchesBirthdayBefore = !bdayBefore || (charBirthday && charBirthday <= bdayBefore);
-
-    if (matchesName && matchesEnra && matchesBirthdayAfter && matchesBirthdayBefore) {
-      container.appendChild(createCharacterCard(char));
-    }
-  });
-}
-
-function resetFilters() {
-  document.getElementById("nameFilter").value = "";
-  document.getElementById("minEnraFilter").value = "";
-  document.getElementById("birthdayAfterFilter").value = "";
-  document.getElementById("birthdayBeforeFilter").value = "";
-  applyFilters();
-}
-
-function createCharacterCard(char) {
-  const card = document.createElement("li");
-  card.className = "character-card";
-
-  const name = document.createElement("h2");
-  name.textContent = char.name;
-
-  const description = document.createElement("p");
-  description.textContent = char.description;
-
-  const enraBlock = document.createElement("div");
-  const enraTitle = document.createElement("p");
-  enraTitle.textContent = "Enra Readings:";
-
-  if (Array.isArray(char.enra) && char.enra.length > 0) {
-    enraBlock.appendChild(enraTitle);
-
-    const sortedReadings = char.enra.sort((a, b) => b.value - a.value);
-    sortedReadings.forEach((reading) => {
-      const readingText = document.createElement("p");
-      readingText.textContent = `• ${reading.value} (${reading.context})`;
-      enraBlock.appendChild(readingText);
-    });
-  } else {
-    const noEnra = document.createElement("p");
-    noEnra.textContent = "Enra Readings: Unknown";
-    enraBlock.appendChild(noEnra);
-  }
-
-  const birthday = document.createElement("p");
-  birthday.textContent = `Birthday: ${char.birthday ?? "Unknown"}`;
-
-  card.appendChild(name);
-  card.appendChild(description);
-  card.appendChild(enraBlock);
-  card.appendChild(birthday);
-
-  return card;
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  applyFilters();
 });
