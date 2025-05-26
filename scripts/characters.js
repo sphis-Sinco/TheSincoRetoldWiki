@@ -3,8 +3,7 @@ const characters = [
     name: "Sinco",
     description: "Teenage Speedster Hero of Tempo City",
     enra: [
-      { value: 1080, context: "After training in the afterlife with Karo" },
-      { value: 400, context: "Before unlocking his full potential" }
+      { value: 1080, context: "After training in the afterlife with Karo" }
     ]
   },
   {
