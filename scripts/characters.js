@@ -1,9 +1,10 @@
-// characters.js
-
 const characters = [
   {
     name: "Sinco",
-    description: "Teenage Speedster Hero of Tempo City"
+    description: "Teenage Speedster Hero of Tempo City",
+    enra: [
+      { value: 1080, context: "After training in the afterlife with Karo" }
+    ]
   },
   {
     name: "TJ",
@@ -31,7 +32,6 @@ const characters = [
   }
 ];
 
-// Render character cards
 document.addEventListener("DOMContentLoaded", () => {
   const container = document.getElementById("character-list");
   container.innerHTML = "";
@@ -46,15 +46,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const description = document.createElement("p");
     description.textContent = char.description;
 
-    const enra = document.createElement("p");
-    enra.textContent = `Enra Reading: ${char.enra ?? "Unknown"}`;
+    const enraBlock = document.createElement("div");
+    const enraTitle = document.createElement("p");
+    enraTitle.textContent = "Enra Readings:";
+
+    if (Array.isArray(char.enra) && char.enra.length > 0) {
+      enraBlock.appendChild(enraTitle);
+      char.enra.forEach((reading) => {
+        const readingText = document.createElement("p");
+        readingText.textContent = `• ${reading.value} (${reading.context})`;
+        enraBlock.appendChild(readingText);
+      });
+    } else {
+      const noEnra = document.createElement("p");
+      noEnra.textContent = "Enra Readings: Unknown";
+      enraBlock.appendChild(noEnra);
+    }
 
     const birthday = document.createElement("p");
     birthday.textContent = `Birthday: ${char.birthday ?? "Unknown"}`;
 
     card.appendChild(name);
     card.appendChild(description);
-    card.appendChild(enra);
+    card.appendChild(enraBlock);
     card.appendChild(birthday);
 
     container.appendChild(card);
