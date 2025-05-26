@@ -4,12 +4,11 @@ import {
   createCardSection,
   createFooter,
   strong,
-  italic,
-  span,
-  link,
   paragraph,
-  list
+  link
 } from './global.js';
+
+import { renderChangelog } from './changelog.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   const header = document.getElementById("header");
@@ -41,11 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
       link("Read more...", "#")
     )) +
 
-    createCardSection("Recent Updates", list([
-      strong("May 25:") + " Added new details to the " + span("Sky Reavers", "tag") + " faction page.",
-      strong("May 20:") + " Timeline updated with entries from the Dawnfall Arc.",
-      strong("May 18:") + " New artwork added to the character profile of Lysira."
-    ]));
+    createCardSection("Recent Updates", renderChangelog());
 
   footer.innerHTML = createFooter(2025, "The Sinco Retold Wiki");
 });
