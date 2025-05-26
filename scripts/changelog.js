@@ -1,58 +1,54 @@
-// scripts/changelog.js
-
 import { strong, span } from './global.js';
 
-export const changelog = [
-  {
-    changenum: 0,
-    date: "2025-05-26",
-    text: "Initial homepage created for the official ",
-    tag: { text: "Sinco Retold Wiki", class: "tag" },
-    after: "."
-  },
-  {
-    changenum: 1,
-    date: "2025-05-26",
-    text: "Made navbar elements spaced properly using CSS."
-  },
-  {
-    changenum: 2,
-    date: "2025-05-26",
-    text: "Removed the 'Factions' tab from the navigation bar."
-  },
-  {
-    changenum: 3,
-    date: "2025-05-26",
-    text: "Moved the featured article logic to a separate homepageContent module.",
-    tag: { text: "Featured Article", class: "tag" },
-    after: " section is now modular and can display a fallback message."
-  },
-  {
-    changenum: 4,
-    date: "2025-05-26",
-    text: "Recent Updates section now loads dynamically from a JSON-like array.",
-    tag: { text: "Changelog", class: "tag" },
-    after: " entries are easier to add."
-  },
-  {
-  changenum: 5,
-  date: "2025-05-26",
-  text: "Updated Contact link in footer to open Gmail compose for sinconsistencia@gmail.com email."
-  }
-];
+// Internal counter
+let changenum = -1;
 
-/**
- * Returns an HTML string of the changelog as a list.
- */
+// Changelog storage
+export const changelog = {};
+
+// Function to add a single change
+export function addChange(date, text, tag = null, after = "") {
+  changenum++;
+  const entry = { changenum, date, text };
+  if (tag) entry.tag = tag;
+  if (after) entry.after = after;
+
+  if (!changelog[date]) {
+    changelog[date] = [];
+  }
+  changelog[date].push(entry);
+}
+
+// Function to add multiple changes for the same date
+export function addChanges(date, changes) {
+  for (const change of changes) {
+    addChange(date, change.text, change.tag || null, change.after || "");
+  }
+}
+
+// === Changelog Entries ===
+addChanges("2025-05-26", [
+  { text: "Initial homepage created for the official ", tag: { text: "Sinco Retold Wiki", class: "tag" }, after: "." },
+  { text: "Made navbar elements spaced properly using CSS." },
+  { text: "Removed the 'Factions' tab from the navigation bar." },
+  { text: "Moved the featured article logic to a separate homepageContent module.", tag: { text: "Featured Article", class: "tag" }, after: " section is now modular and can display a fallback message." },
+  { text: "Recent Updates section now loads dynamically from a JSON-like array.", tag: { text: "Changelog", class: "tag" }, after: " entries are easier to add." },
+  { text: "Updated Contact link in footer to open Gmail compose for sinconsistencia@gmail.com email." },
+  { text: "Added support for bulk changelog entries via addChanges function.", tag: { text: "Improvement", class: "tag" } }
+]);
+
+// === Render function ===
 export function renderChangelog() {
-  return `<ul>
-    ${changelog
-      .slice()
-      .reverse() // Show newest first
-      .map(entry => {
-        const tagHTML = entry.tag ? span(entry.tag.text, entry.tag.class) : "";
-        return `<li>${strong(entry.date + ":")} ${entry.text}${tagHTML}${entry.after || ""}</li>`;
-      })
-      .join("\n")}
-  </ul>`;
+  const dates = Object.keys(changelog).sort((a, b) => b.localeCompare(a));
+  return dates.map(date => `
+    <h3>${date}</h3>
+    <ul>
+      ${changelog[date]
+        .sort((a, b) => b.changenum - a.changenum)
+        .map(entry => {
+          const tag = entry.tag ? span(entry.tag.text, entry.tag.class) : "";
+          return `<li>${strong("•")} ${entry.text}${tag}${entry.after || ""}</li>`;
+        }).join('\n')}
+    </ul>
+  `).join('\n');
 }
