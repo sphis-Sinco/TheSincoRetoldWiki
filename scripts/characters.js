@@ -1,5 +1,6 @@
 // scripts/characters.js
 import { setupBasePage } from './basepage.js';
+import { paragraph, strong } from './global.js';
 
 const characters = [
   { name: "Slate", description: "The determined commander navigating the perils of Sinco Retold." },
@@ -10,8 +11,8 @@ const characters = [
 function renderCharacterCard(character) {
   return `
     <section class="character-card">
-      <h2>${character.name}</h2>
-      <p>${character.description}</p>
+      <h2>${strong(character.name)}</h2>
+      ${paragraph(character.description)}
     </section>
   `;
 }
