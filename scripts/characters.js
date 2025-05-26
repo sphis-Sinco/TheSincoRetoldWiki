@@ -64,9 +64,9 @@ const characters = [
 ];
 
 function formatDate(dateString) {
-  if (!dateString) return '';
+  if (!dateString) return 'Unknown';
   const date = new Date(dateString);
-  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  return isNaN(date) ? 'Unknown' : date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 function renderCharacterCard(character) {
@@ -75,17 +75,19 @@ function renderCharacterCard(character) {
     <ul>
       <li>${strong("First Appearance:")} Issue #${character.firstAppearance}</li>
       <li>${strong("Last Appearance:")} Issue #${character.lastAppearance}</li>
-      ${typeof character.powerLevel === 'number' ? `<li>${strong("Power Level:")} ${character.powerLevel}</li>` : ''}
-      ${character.birthday ? `<li>${strong("Birthday:")} ${formatDate(character.birthday)}</li>` : ''}
-      ${character.funFacts && character.funFacts.length ? `
+      <li>${strong("Power Level:")} ${typeof character.powerLevel === 'number' ? character.powerLevel : "Unknown"}</li>
+      <li>${strong("Birthday:")} ${formatDate(character.birthday)}</li>
+      ${
+        character.funFacts && character.funFacts.length ? `
         <li>
           ${strong("Fun Facts:")}
-          <details>
+          <details class="fun-fact-box">
             <summary>Click to expand</summary>
             <ul>${character.funFacts.map(fact => `<li>${fact}</li>`).join('')}</ul>
           </details>
         </li>
-      ` : ''}
+      ` : ''
+      }
     </ul>
   `;
   return createCardSection(character.name, content);
@@ -121,10 +123,10 @@ function sortCharacters(type) {
   let sorted = [...characters];
   switch (type) {
     case "powerDesc":
-      sorted.sort((a, b) => (b.powerLevel || 0) - (a.powerLevel || 0));
+      sorted.sort((a, b) => (b.powerLevel ?? 0) - (a.powerLevel ?? 0));
       break;
     case "powerAsc":
-      sorted.sort((a, b) => (a.powerLevel || Infinity) - (b.powerLevel || Infinity));
+      sorted.sort((a, b) => (a.powerLevel ?? Infinity) - (b.powerLevel ?? Infinity));
       break;
     case "firstAppearance":
       sorted.sort((a, b) => a.firstAppearance - b.firstAppearance);
