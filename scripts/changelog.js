@@ -1,12 +1,8 @@
 import { strong, span } from './global.js';
 
-// Internal counter
 let changenum = -1;
-
-// Changelog storage
 export const changelog = {};
 
-// Function to add a single change
 export function addChange(date, text, tag = null, after = "") {
   changenum++;
   const entry = { changenum, date, text };
@@ -19,25 +15,24 @@ export function addChange(date, text, tag = null, after = "") {
   changelog[date].push(entry);
 }
 
-// Function to add multiple changes for the same date
 export function addChanges(date, changes) {
   for (const change of changes) {
     addChange(date, change.text, change.tag || null, change.after || "");
   }
 }
 
-// === Changelog Entries ===
+// === Actual site-impacting changes ===
 addChanges("2025-05-26", [
-  { text: "Initial homepage created for the official ", tag: { text: "Sinco Retold Wiki", class: "tag" }, after: "." },
-  { text: "Made navbar elements spaced properly using CSS." },
-  { text: "Removed the 'Factions' tab from the navigation bar." },
-  { text: "Moved the featured article logic to a separate homepageContent module.", tag: { text: "Featured Article", class: "tag" }, after: " section is now modular and can display a fallback message." },
-  { text: "Recent Updates section now loads dynamically from a JSON-like array.", tag: { text: "Changelog", class: "tag" }, after: " entries are easier to add." },
-  { text: "Updated Contact link in footer to open Gmail compose for sinconsistencia@gmail.com email." },
-  { text: "Added support for bulk changelog entries via addChanges function.", tag: { text: "Improvement", class: "tag" } }
+  { text: "Created the initial homepage for the official ", tag: { text: "Sinco Retold Wiki", class: "tag" }, after: "." },
+  { text: "Added spacing between navbar elements using CSS to improve layout." },
+  { text: "Removed the 'Factions' tab from the navigation bar as it's not applicable." },
+  { text: "Moved featured article logic into a dedicated homepageContent module with fallback message support." },
+  { text: "Made the Recent Updates section load dynamically from a JSON array for easier updating." },
+  { text: "Updated the Contact link in footer to open Gmail compose targeting sinconsistencia@gmail.com." },
+  { text: "Implemented changelog entry grouping by date and improved rendering for better readability." },
+  { text: "Added bulk changelog entry support via addChanges function for easier maintenance.", tag: { text: "Improvement", class: "tag" } }
 ]);
 
-// === Render function ===
 export function renderChangelog() {
   const dates = Object.keys(changelog).sort((a, b) => b.localeCompare(a));
   return dates.map(date => `
