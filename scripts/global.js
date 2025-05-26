@@ -39,5 +39,7 @@ export function createCardSection(title, content) {
 }
 
 export function createFooter(year, siteName) {
-  return `<p>&copy; ${year} ${siteName}. All rights reserved. | ${link("Contact", "#")}</p>`;
+  const contactHref = "https://mail.google.com/mail/?view=cm&fs=1&to=sinconsistencia@gmail.com";
+  const contactLink = link("Contact", contactHref, "", "_blank");
+  return `<p>&copy; ${year} ${siteName}. All rights reserved. | ${contactLink}</p>`;
 }
