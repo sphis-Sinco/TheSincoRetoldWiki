@@ -1,19 +1,20 @@
-// scripts/index.js
-import { setupBasePage } from './basepage.js';
-import { paragraph, strong } from './global.js';
-
-function getHomepageContent() {
-  return `
-    <h1>Welcome to The Sinco Retold Wiki</h1>
-    ${paragraph(
-      "This is the official encyclopedia maintained by the creator of",
-      strong("Sinco Retold") + ".",
-      "Whether you're new or returning, this archive helps you dive deeper into the mythos."
-    )}
-  `;
-}
+// script.js
 
 document.addEventListener("DOMContentLoaded", () => {
-  const main = setupBasePage();
-  main.innerHTML = getHomepageContent();
+  const articleList = document.getElementById("article-list");
+  const featuredArticles = [
+    "The Origin of Sinco",
+    "Timeline of the Retold Universe",
+    "Major Factions Explained",
+    "Key Characters: Vol 1",
+    "Artifacts and Technology"
+  ];
+
+  articleList.innerHTML = "";
+
+  featuredArticles.forEach(article => {
+    const li = document.createElement("li");
+    li.textContent = article;
+    articleList.appendChild(li);
+  });
 });
