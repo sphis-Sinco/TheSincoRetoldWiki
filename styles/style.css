@@ -88,3 +88,8 @@ footer {
 .character-card:hover {
   transform: translateY(-5px);
 }
+
+#character-list > ul {
+  list-style-type: none;
+  padding-left: 0;
+}
