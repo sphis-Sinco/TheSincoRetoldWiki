@@ -34,7 +34,7 @@ const characters = [
     birthday: "2023-10-08",
     enra: [
       { value: 1257, context: "Rage Boost power during Titan-T arc (Volume 4)" },
-      { value: 1020, context: "Resting power during Titan-T arc (Volume 4)", formBase: true },
+      { value: 1020, context: "Resting power during Titan-T arc (Volume 4)", formBaseEnra: true },
       { value: 855, context: "During Squad 2 Invasion with a Rage boost" },
       { value: 630, context: "After Squad 2 Invasion is over" },
       { value: 570, context: "During Squad 2 Invasion" },
@@ -63,40 +63,50 @@ const characters = [
     birthday: "1974-06-23",
     enra: [
       { value: 416, context: "After going super for the first time" },
-      { value: 334, context: "After getting speedster powers", formBase: true },
+      { value: 334, context: "After getting speedster powers", formBaseEnra: true },
       { value: 2, context: "Before getting speedster powers" }
     ]
   }
 ];
 
-// Character names and the forms they have (no excludes or available flags needed)
-const formMultipliers = {
-  "Sinco": ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
-  "TJ": ["Calm Super"],
-  "Osin": ["Calm Super", "Hyper Form", "Hyper Rage", "Fury Form"],
-  "Docaci": ["Calm Super"],
-  "Karo": ["Super"]
-};
-
-// Multiplier values for all forms
+// Form multipliers as constants
 const allFormMultipliers = {
   "Super": 1.10,
   "Calm Super": 1.05,
   "Super Grade 2": 1.20,
   "Fury Form": 1.40,
   "Hyper Form": 1.70,
-  "Hyper Rage": 1.90,
+  "Hyper Rage Form": 1.90,
   "Hyper Remnant": 1.50
 };
 
+// Characters that have forms and their allowed forms
+const characterForms = {
+  "Sinco": ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
+  "TJ": ["Calm Super"],
+  "Osin": ["Calm Super", "Hyper Form", "Hyper Rage Form"],
+  "Docaci": ["Calm Super"],
+  "Karo": ["Super"]
+};
+
+// Helper to get highest enra reading and the one marked as formBaseEnra if any
+function getFormBaseEnra(char) {
+  if (!char.enra || char.enra.length === 0) return null;
+  // Look for formBaseEnra true first
+  const base = char.enra.find(e => e.formBaseEnra === true);
+  if (base) return base;
+  // Otherwise return highest value
+  return char.enra.reduce((max, e) => e.value > max.value ? e : max, char.enra[0]);
+}
+
+// Generate form power readings with multiplier text
 function getFormPowers(baseValue, forms) {
-  return forms
-    .filter(form => allFormMultipliers[form])  // only valid forms
-    .map(form => {
-      const multiplier = allFormMultipliers[form];
-      const power = Math.round(baseValue * multiplier);
-      return `${form}: ${power}`;
-    });
+  return forms.map(form => {
+    const multiplier = allFormMultipliers[form];
+    if (!multiplier) return null;
+    const power = Math.round(baseValue * multiplier);
+    return `${form}: ${power} (x${multiplier})`;
+  }).filter(Boolean);
 }
 
 // Render characters into the page
@@ -139,28 +149,35 @@ function renderCharacters(list) {
     card.appendChild(name);
     card.appendChild(description);
     card.appendChild(enraBlock);
-    card.appendChild(birthday);
 
-    // If character has forms, add form footnotes based on base Enra reading
-    if (formMultipliers[char.name]) {
-      // Find formBase entry or fallback to highest enra reading
-      const baseEntry = char.enra?.find(e => e.formBase) || char.enra?.reduce((max, e) => e.value > max.value ? e : max, { value: 0, context: "Unknown" });
-      const baseValue = baseEntry.value;
-      const baseContext = baseEntry.context;
+    // Add form footnotes if character has forms
+    if (characterForms[char.name]) {
+      const baseEnra = getFormBaseEnra(char);
+      if (baseEnra) {
+        const footnote = document.createElement("div");
+        footnote.className = "form-footnote";
 
-      const formsToUse = formMultipliers[char.name];
-      const formList = getFormPowers(baseValue, formsToUse);
+        const formTitle = document.createElement("p");
+        formTitle.textContent = `Form powers (based on ${baseEnra.value} Enra — "${baseEnra.context}"):`;
+        footnote.appendChild(formTitle);
 
-      const formTitle = document.createElement("p");
-      formTitle.textContent = `Forms (based on Enra reading ${baseValue} — ${baseContext}):`;
-      card.appendChild(formTitle);
+        // Filter allowed forms, removing excluded forms per character rules
+        const allowedForms = characterForms[char.name];
 
-      formList.forEach((formStr) => {
-        const formItem = document.createElement("p");
-        formItem.textContent = `• ${formStr}`;
-        card.appendChild(formItem);
-      });
+        // Calculate form powers with multipliers and include multiplier in parentheses
+        const formReadings = getFormPowers(baseEnra.value, allowedForms);
+
+        formReadings.forEach(text => {
+          const p = document.createElement("p");
+          p.textContent = "• " + text;
+          footnote.appendChild(p);
+        });
+
+        card.appendChild(footnote);
+      }
     }
+
+    card.appendChild(birthday);
 
     container.appendChild(card);
   });
