@@ -69,31 +69,16 @@ const characters = [
   }
 ];
 
-// Define form multipliers and exceptions for characters and their available forms
+// Character names and the forms they have (no excludes or available flags needed)
 const formMultipliers = {
-  "Sinco": {
-    available: ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
-    exclude: ["Hyper Rage"] // Sinco doesn't have Hyper Rage
-  },
-  "TJ": {
-    available: ["Calm Super"],
-    exclude: ["Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Rage", "Hyper Remnant"]
-  },
-  "Osin": {
-    available: ["Calm Super", "Hyper Form", "Hyper Rage", "Fury Form"],
-    exclude: ["Super", "Super Grade 2", "Hyper Remnant"]
-  },
-  "Docaci": {
-    available: ["Calm Super"],
-    exclude: ["Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Rage", "Hyper Remnant"]
-  },
-  "Karo": {
-    available: ["Super"],
-    exclude: ["Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Rage", "Hyper Remnant"]
-  }
+  "Sinco": ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
+  "TJ": ["Calm Super"],
+  "Osin": ["Calm Super", "Hyper Form", "Hyper Rage", "Fury Form"],
+  "Docaci": ["Calm Super"],
+  "Karo": ["Super"]
 };
 
-// Form multiplier percentages relative to base Enra reading
+// Multiplier values for all forms
 const allFormMultipliers = {
   "Super": 1.10,
   "Calm Super": 1.05,
@@ -106,7 +91,7 @@ const allFormMultipliers = {
 
 function getFormPowers(baseValue, forms) {
   return forms
-    .filter(form => allFormMultipliers[form])
+    .filter(form => allFormMultipliers[form])  // only valid forms
     .map(form => {
       const multiplier = allFormMultipliers[form];
       const power = Math.round(baseValue * multiplier);
@@ -135,10 +120,11 @@ function renderCharacters(list) {
     enraBlock.appendChild(enraTitle);
 
     if (Array.isArray(char.enra) && char.enra.length > 0) {
+      // Sort descending by value without mutating original array
       const sortedReadings = [...char.enra].sort((a, b) => b.value - a.value);
       sortedReadings.forEach((reading) => {
         const readingText = document.createElement("p");
-        readingText.textContent = `• ${reading.value} (${reading.context})${reading.formBase ? " [Form Base]" : ""}`;
+        readingText.textContent = `• ${reading.value} (${reading.context})`;
         enraBlock.appendChild(readingText);
       });
     } else {
@@ -153,16 +139,16 @@ function renderCharacters(list) {
     card.appendChild(name);
     card.appendChild(description);
     card.appendChild(enraBlock);
+    card.appendChild(birthday);
 
-    // Add form multipliers if character has forms
+    // If character has forms, add form footnotes based on base Enra reading
     if (formMultipliers[char.name]) {
-      // Find the base Enra reading with formBase flag, or fallback to highest value
+      // Find formBase entry or fallback to highest enra reading
       const baseEntry = char.enra?.find(e => e.formBase) || char.enra?.reduce((max, e) => e.value > max.value ? e : max, { value: 0, context: "Unknown" });
       const baseValue = baseEntry.value;
       const baseContext = baseEntry.context;
 
-      const formsToUse = formMultipliers[char.name].available;
-
+      const formsToUse = formMultipliers[char.name];
       const formList = getFormPowers(baseValue, formsToUse);
 
       const formTitle = document.createElement("p");
@@ -204,6 +190,7 @@ function applyFilters() {
       const bday = new Date(char.birthday);
       if (bday < bornAfter) return false;
     } else if (bornAfter && !char.birthday) {
+      // If no birthday info but filtering by date, exclude
       return false;
     }
 
