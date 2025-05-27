@@ -245,16 +245,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function generateExportJSON(includeForms = true) {
   const enrichedCharacters = characters.map(char => {
-    const baseEnra = char.enra?.find(e => e.formBaseEnra)?.value;
+    const baseEnraEntry = char.enra?.find(e => e.formBaseEnra === true);
+    const baseEnra = baseEnraEntry ? baseEnraEntry.value : null;
 
     let forms = {};
     if (includeForms && baseEnra && characterForms[char.name]) {
       characterForms[char.name].forEach(formName => {
-        const multiplier = formMultipliers[formName];
-        forms[formName] = {
-          enra: +(baseEnra * multiplier).toFixed(2),
-          multiplier
-        };
+        const multiplier = allFormMultipliers[formName];
+        if (multiplier) {
+          forms[formName] = {
+            enra: +(baseEnra * multiplier).toFixed(2),
+            multiplier
+          };
+        }
       });
     }
 
@@ -267,10 +270,14 @@ function generateExportJSON(includeForms = true) {
   const blob = new Blob([JSON.stringify(enrichedCharacters, null, 2)], {
     type: "application/json"
   });
+
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "characters.json";
+
+  // Different filename depending on includeForms
+  link.download = includeForms ? "characters-with-forms.json" : "characters.json";
+
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
