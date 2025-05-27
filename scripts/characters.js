@@ -242,3 +242,36 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
   document.getElementById("resetFiltersBtn").addEventListener("click", resetFilters);
 });
+
+function generateExportJSON(includeForms = true) {
+  const enrichedCharacters = characters.map(char => {
+    const baseEnra = char.enra?.find(e => e.formBaseEnra)?.value;
+
+    let forms = {};
+    if (includeForms && baseEnra && characterForms[char.name]) {
+      characterForms[char.name].forEach(formName => {
+        const multiplier = formMultipliers[formName];
+        forms[formName] = {
+          enra: +(baseEnra * multiplier).toFixed(2),
+          multiplier
+        };
+      });
+    }
+
+    return {
+      ...char,
+      ...(includeForms && Object.keys(forms).length > 0 ? { forms } : {})
+    };
+  });
+
+  const blob = new Blob([JSON.stringify(enrichedCharacters, null, 2)], {
+    type: "application/json"
+  });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "characters.json";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
