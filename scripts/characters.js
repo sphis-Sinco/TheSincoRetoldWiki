@@ -69,40 +69,49 @@ const characters = [
   }
 ];
 
-// Form multipliers and applicable forms for each character
+// Define form multipliers and exceptions for characters and their available forms
 const formMultipliers = {
+  "Sinco": {
+    available: ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
+    exclude: ["Hyper Rage"] // Sinco doesn't have Hyper Rage
+  },
+  "TJ": {
+    available: ["Calm Super"],
+    exclude: ["Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Rage", "Hyper Remnant"]
+  },
+  "Osin": {
+    available: ["Calm Super", "Hyper Form", "Hyper Rage", "Fury Form"],
+    exclude: ["Super", "Super Grade 2", "Hyper Remnant"]
+  },
+  "Docaci": {
+    available: ["Calm Super"],
+    exclude: ["Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Rage", "Hyper Remnant"]
+  },
+  "Karo": {
+    available: ["Super"],
+    exclude: ["Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Rage", "Hyper Remnant"]
+  }
+};
+
+// Form multiplier percentages relative to base Enra reading
+const allFormMultipliers = {
   "Super": 1.10,
   "Calm Super": 1.05,
   "Super Grade 2": 1.20,
   "Fury Form": 1.40,
   "Hyper Form": 1.70,
-  "Hyper Rage Form": 1.90,
+  "Hyper Rage": 1.90,
   "Hyper Remnant": 1.50
 };
 
-const characterForms = {
-  Sinco: ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
-  TJ: ["Calm Super"],
-  Osin: ["Rage Form", "Hyper Form"], // Rage Form is presumably Fury form, exclude some forms per your instructions
-  Docaci: ["Calm Super"],
-  Karo: ["Super"]
-};
-
-// Helper: get form base Enra value using formBase flag or highest value fallback
-function getFormBaseEnra(char) {
-  const baseEntry = char.enra?.find(e => e.formBase);
-  if (baseEntry) return baseEntry.value;
-  // fallback highest Enra value
-  return Math.max(...(char.enra?.map(e => e.value) || [0]));
-}
-
-// Generate form power strings for a character
 function getFormPowers(baseValue, forms) {
-  return forms.map(form => {
-    const multiplier = formMultipliers[form] || 1;
-    const power = Math.round(baseValue * multiplier);
-    return `${form}: ${power}`;
-  });
+  return forms
+    .filter(form => allFormMultipliers[form])
+    .map(form => {
+      const multiplier = allFormMultipliers[form];
+      const power = Math.round(baseValue * multiplier);
+      return `${form}: ${power}`;
+    });
 }
 
 // Render characters into the page
@@ -146,12 +155,18 @@ function renderCharacters(list) {
     card.appendChild(enraBlock);
 
     // Add form multipliers if character has forms
-    if (characterForms[char.name]) {
-      const baseValue = getFormBaseEnra(char);
-      const formList = getFormPowers(baseValue, characterForms[char.name]);
+    if (formMultipliers[char.name]) {
+      // Find the base Enra reading with formBase flag, or fallback to highest value
+      const baseEntry = char.enra?.find(e => e.formBase) || char.enra?.reduce((max, e) => e.value > max.value ? e : max, { value: 0, context: "Unknown" });
+      const baseValue = baseEntry.value;
+      const baseContext = baseEntry.context;
+
+      const formsToUse = formMultipliers[char.name].available;
+
+      const formList = getFormPowers(baseValue, formsToUse);
 
       const formTitle = document.createElement("p");
-      formTitle.textContent = `Forms (based on Enra reading ${baseValue}):`;
+      formTitle.textContent = `Forms (based on Enra reading ${baseValue} — ${baseContext}):`;
       card.appendChild(formTitle);
 
       formList.forEach((formStr) => {
@@ -165,7 +180,56 @@ function renderCharacters(list) {
   });
 }
 
-// Filter logic and other functions unchanged...
+// Filter logic for the character list
+function applyFilters() {
+  const nameQuery = document.getElementById("nameFilter").value.trim().toLowerCase();
+  const minEnraInput = document.getElementById("minEnraFilter").value.trim();
+  const minEnra = minEnraInput === "" ? 0 : parseInt(minEnraInput, 10);
+  const bornAfterInput = document.getElementById("birthdayAfterFilter").value;
+  const bornBeforeInput = document.getElementById("birthdayBeforeFilter").value;
+  const bornAfter = bornAfterInput ? new Date(bornAfterInput) : null;
+  const bornBefore = bornBeforeInput ? new Date(bornBeforeInput) : null;
+
+  const filtered = characters.filter((char) => {
+    // Check name
+    if (nameQuery && !char.name.toLowerCase().includes(nameQuery)) return false;
+
+    // Check min Enra reading (highest value)
+    const enraValues = char.enra?.map(r => r.value) || [];
+    const highestEnra = enraValues.length > 0 ? Math.max(...enraValues) : 0;
+    if (highestEnra < minEnra) return false;
+
+    // Check birthday after
+    if (bornAfter && char.birthday) {
+      const bday = new Date(char.birthday);
+      if (bday < bornAfter) return false;
+    } else if (bornAfter && !char.birthday) {
+      return false;
+    }
+
+    // Check birthday before
+    if (bornBefore && char.birthday) {
+      const bday = new Date(char.birthday);
+      if (bday > bornBefore) return false;
+    } else if (bornBefore && !char.birthday) {
+      return false;
+    }
+
+    return true;
+  });
+
+  renderCharacters(filtered);
+}
+
+// Reset filters to defaults and show all characters
+function resetFilters() {
+  document.getElementById("nameFilter").value = "";
+  document.getElementById("minEnraFilter").value = "";
+  document.getElementById("birthdayAfterFilter").value = "";
+  document.getElementById("birthdayBeforeFilter").value = "";
+
+  renderCharacters(characters);
+}
 
 // Initialize rendering and event listeners on page load
 document.addEventListener("DOMContentLoaded", () => {
