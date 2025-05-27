@@ -1,5 +1,3 @@
-// characters.js
-
 const characters = [
   {
     name: "Sinco",
@@ -71,6 +69,26 @@ const characters = [
   }
 ];
 
+// Form multipliers
+const FORM_MULTIPLIERS = {
+  "Super": 1.1,
+  "Calm Super": 1.05,
+  "Super Grade 2": 1.2,
+  "Fury Form": 1.4,
+  "Hyper Form": 1.7,
+  "Hyper Rage": 1.9,
+  "Hyper Remnant": 1.5
+};
+
+// Form availability
+const FORM_SETS = {
+  "Sinco": ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form"],
+  "TJ": ["Calm Super"],
+  "Osin": ["Fury Form", "Hyper Form"],
+  "Docaci": ["Calm Super"],
+  "Karo": ["Super"]
+};
+
 // Render characters into the page
 function renderCharacters(list) {
   const container = document.getElementById("character-list");
@@ -91,9 +109,11 @@ function renderCharacters(list) {
     enraTitle.textContent = "Enra Readings:";
     enraBlock.appendChild(enraTitle);
 
+    let highestEnra = 0;
+
     if (Array.isArray(char.enra) && char.enra.length > 0) {
-      // Sort descending by value without mutating original array
       const sortedReadings = [...char.enra].sort((a, b) => b.value - a.value);
+      highestEnra = sortedReadings[0].value;
       sortedReadings.forEach((reading) => {
         const readingText = document.createElement("p");
         readingText.textContent = `• ${reading.value} (${reading.context})`;
@@ -103,6 +123,25 @@ function renderCharacters(list) {
       const noEnra = document.createElement("p");
       noEnra.textContent = "Unknown";
       enraBlock.appendChild(noEnra);
+    }
+
+    // Transformation info for applicable characters
+    if (FORM_SETS[char.name]) {
+      const formBlock = document.createElement("div");
+      formBlock.style.marginTop = "8px";
+
+      const note = document.createElement("p");
+      note.textContent = `Form multipliers based on highest Enra (${highestEnra}):`;
+      formBlock.appendChild(note);
+
+      FORM_SETS[char.name].forEach(formName => {
+        const power = Math.round(highestEnra * FORM_MULTIPLIERS[formName]);
+        const formLine = document.createElement("p");
+        formLine.textContent = `• ${formName}: ${power}`;
+        formBlock.appendChild(formLine);
+      });
+
+      enraBlock.appendChild(formBlock);
     }
 
     const birthday = document.createElement("p");
@@ -128,24 +167,19 @@ function applyFilters() {
   const bornBefore = bornBeforeInput ? new Date(bornBeforeInput) : null;
 
   const filtered = characters.filter((char) => {
-    // Check name
     if (nameQuery && !char.name.toLowerCase().includes(nameQuery)) return false;
 
-    // Check min Enra reading (highest value)
     const enraValues = char.enra?.map(r => r.value) || [];
     const highestEnra = enraValues.length > 0 ? Math.max(...enraValues) : 0;
     if (highestEnra < minEnra) return false;
 
-    // Check birthday after
     if (bornAfter && char.birthday) {
       const bday = new Date(char.birthday);
       if (bday < bornAfter) return false;
     } else if (bornAfter && !char.birthday) {
-      // If no birthday info but filtering by date, exclude
       return false;
     }
 
-    // Check birthday before
     if (bornBefore && char.birthday) {
       const bday = new Date(char.birthday);
       if (bday > bornBefore) return false;
@@ -169,10 +203,8 @@ function resetFilters() {
   renderCharacters(characters);
 }
 
-// Initialize rendering and event listeners on page load
 document.addEventListener("DOMContentLoaded", () => {
   renderCharacters(characters);
-
   document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
   document.getElementById("resetFiltersBtn").addEventListener("click", resetFilters);
 });
