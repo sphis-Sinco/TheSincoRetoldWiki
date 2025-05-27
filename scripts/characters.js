@@ -208,3 +208,19 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
   document.getElementById("resetFiltersBtn").addEventListener("click", resetFilters);
 });
+
+function exportCharactersToJson() {
+  const dataStr = JSON.stringify(characters, null, 2); // Prettified JSON
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "characters.json";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("exportJsonBtn").addEventListener("click", exportCharactersToJson);
