@@ -88,16 +88,11 @@ const allFormMultipliers = {
   "Hyper Rage Form": 2.7
 };
 
-// Helper: Calculate base Enra for a character (example uses strength * speed / 10)
-function getBaseEnra(char) {
-  return (char.strength * char.speed) / 10;
-}
-
 // Helper: Get the base Enra object (value and context) for a character
 function getFormBaseEnra(char) {
-  // Here we define base enra with context string - you can customize as needed
-  const value = getBaseEnra(char);
-  return { value, context: "Base power" };
+  // Try to find the one marked as formBaseEnra, or just pick the highest if not
+  const base = char.enra.find(e => e.formBaseEnra) || char.enra.reduce((a, b) => (a.value > b.value ? a : b), { value: 0 });
+  return base;
 }
 
 // Helper: Given a base Enra and a list of form names, return an array of strings with form powers
@@ -111,7 +106,7 @@ function getFormPowers(baseEnra, allowedForms) {
   });
 }
 
-// Renders character cards with stats and form footnotes
+// Renders character cards with form footnotes
 function renderCharacters() {
   const container = document.getElementById("characters-container");
   container.innerHTML = "";
@@ -124,9 +119,9 @@ function renderCharacters() {
     nameElem.textContent = char.name;
     card.appendChild(nameElem);
 
-    const stats = document.createElement("p");
-    stats.textContent = `Age: ${char.age}, Strength: ${char.strength}, Speed: ${char.speed}`;
-    card.appendChild(stats);
+    const desc = document.createElement("p");
+    desc.textContent = char.description;
+    card.appendChild(desc);
 
     // Add form footnotes based on character's own forms
     if (char.forms && char.forms.length > 0) {
@@ -158,7 +153,7 @@ function renderCharacters() {
 // Export character data as JSON, optionally including form power calculations
 function generateExportJSON(includeForms = true) {
   const exportData = characters.map(char => {
-    const baseEnra = getBaseEnra(char);
+    const base = getFormBaseEnra(char);
     const forms = {};
 
     if (includeForms && char.forms && char.forms.length > 0) {
@@ -166,7 +161,7 @@ function generateExportJSON(includeForms = true) {
         const multiplier = allFormMultipliers[formName];
         if (multiplier) {
           forms[formName] = {
-            enra: +(baseEnra * multiplier).toFixed(2),
+            enra: +(base.value * multiplier).toFixed(2),
             multiplier
           };
         }
@@ -175,10 +170,9 @@ function generateExportJSON(includeForms = true) {
 
     return {
       name: char.name,
-      age: char.age,
-      strength: char.strength,
-      speed: char.speed,
-      baseEnra: +baseEnra.toFixed(2),
+      description: char.description,
+      birthday: char.birthday || undefined,
+      baseEnra: base.value,
       forms
     };
   });
