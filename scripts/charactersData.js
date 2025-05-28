@@ -62,7 +62,7 @@ export const characters = [
     createCharacter(
       "Sinco (Timeline V5B)",
       "Sinco months later after failing to make his wish in the Titan-T saga",
-      "2011-09-19',
+      "2011-09-19",
       [
         [1662, "When coming to Timeline V5A / When creating Timeline V5C"]
       ],
