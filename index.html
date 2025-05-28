@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,31 +10,61 @@
   <header>
     <h1>The Sinco Retold Wiki</h1>
     <p>Welcome to the definitive archive of Sinco Retold—its stories, characters, factions, timelines, and secrets.</p>
-  </header>  <nav>
-  <ul>
-    <li><a href="#about">About</a></li>
-    <li><a href="#articles">Featured Articles</a></li>
-    <li><a href="#community">Community</a></li>
-    <li><a href="pages/characters.html">Characters</a></li> <!-- Updated href -->
-  </ul>
-</nav>  <main>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#articles">Featured Articles</a></li>
+      <li><a href="#community">Community</a></li>
+      <li><a href="pages/characters.html">Characters</a></li>
+    </ul>
+  </nav>
+
+  <main>
     <section id="about">
       <h2>About the Wiki</h2>
       <p>The Sinco Retold Wiki is a collaborative encyclopedia for <em>Sinco Retold</em>, a reimagined saga blending science fiction, mystery, and myth. Whether you're a new explorer or a lore veteran, this site is your hub for uncovering every layer of the Sinco universe.</p>
-    </section><section id="articles">
-  <h2>Featured Articles</h2>
-  <ul id="article-list">
-    <li>No featured articles available at the moment. Check back soon!</li>
-  </ul>
-</section>
+    </section>
 
-<section id="community">
-  <h2>Join the Community</h2>
-  <p>Connect with fellow fans, contribute your knowledge, or start discussions about theories, characters, and episodes.</p>
-  <p><a href="https://discord.gg/mGqD32fYf6" target="_blank">Join our Discord Server</a></p>
-</section>
+    <section id="articles">
+      <h2>Featured Articles</h2>
+      <ul id="article-list">
+        <li>No featured articles available at the moment. Check back soon!</li>
+      </ul>
+    </section>
 
-  </main>  <footer>
+    <section id="community">
+      <h2>Join the Community</h2>
+      <p>Connect with fellow fans, contribute your knowledge, or start discussions about theories, characters, and episodes.</p>
+      <p><a href="https://discord.gg/mGqD32fYf6" target="_blank">Join our Discord Server</a></p>
+    </section>
+  </main>
+
+  <footer>
     <p>&copy; 2025 The Sinco Retold Wiki. All rights reserved.</p>
-  </footer>  <script src="scripts/index.js"></script></body>
+    <p id="latest-commit">Latest Git Commit: <code>Loading...</code></p>
+  </footer>
+
+  <script>
+    const commitDisplay = document.getElementById("latest-commit");
+
+    fetch("https://api.github.com/repos/sphis-Sinco/TheSincoRetoldWiki/commits")
+      .then(response => response.json())
+      .then(data => {
+        const shaFull = data[0]?.sha;
+        const shaShort = shaFull?.slice(0, 7);
+        if (shaShort) {
+          commitDisplay.innerHTML = `Latest Git Commit: <a href="https://github.com/sphis-Sinco/TheSincoRetoldWiki/commit/${shaFull}" target="_blank"><code>${shaShort}</code></a>`;
+        } else {
+          commitDisplay.textContent = "Failed to load commit hash.";
+        }
+      })
+      .catch(() => {
+        commitDisplay.textContent = "Error fetching latest commit.";
+      });
+  </script>
+
+  <script src="scripts/index.js"></script>
+</body>
 </html>
