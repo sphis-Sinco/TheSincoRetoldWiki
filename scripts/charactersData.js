@@ -1,90 +1,4 @@
-// charactersData.js
-
-export const characters = [
-  {
-    name: "Sinco",
-    description: "Teenage Speedster Hero of Tempo City",
-    birthday: "2011-09-19",
-    enra: [
-      { value: 1080, context: "After training in the afterlife with Karo" },
-      { value: 487, context: "Before afterlife training" },
-      { value: 380, context: "After training with Crepode for the first time" },
-      { value: 295, context: "Before training with Crepode for the first time" }
-    ],
-    forms: ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
-    variations: []
-  },
-  {
-    name: "TJ",
-    description: "Teenage Speedster Hero of Boredom City",
-    birthday: "2011-04-03",
-    enra: [
-      { value: 320, context: "After gaining powers" },
-      { value: 10, context: "Before gaining powers" }
-    ],
-    forms: ["Calm Super"],
-    variations: []
-  },
-  {
-    name: "Tirok",
-    description: "Anti-Hero engineer and scientist",
-    birthday: "2000-04-05",
-    enra: [
-      { value: 1537, context: "After getting his wish for power" },
-      { value: 1, context: "Since birth" }
-    ],
-    forms: [],
-    variations: []
-  },
-  {
-    name: "Osin",
-    description: "A clone of Sinco made by Tirok",
-    birthday: "2023-10-08",
-    enra: [
-      { value: 1257, context: "Rage Boost power during Titan-T arc (Volume 4)" },
-      { value: 1020, context: "Resting power during Titan-T arc (Volume 4)", formBaseEnra: true },
-      { value: 855, context: "During Squad 2 Invasion with a Rage boost" },
-      { value: 630, context: "After Squad 2 Invasion is over" },
-      { value: 570, context: "During Squad 2 Invasion" },
-      { value: 313, context: "In creation" }
-    ],
-    forms: ["Calm Super", "Hyper Form", "Hyper Rage Form"],
-    variations: []
-  },
-  {
-    name: "Crepode",
-    description: "Famous creator of the Fuerza technique used by Sinco",
-    enra: [
-      { value: 453, context: "Since Sinco met him" }
-    ],
-    forms: [],
-    variations: []
-  },
-  {
-    name: "Docaci",
-    description: "Speedster mother of Sinco, got her powers drained by Tirok",
-    birthday: "1993-03-14",
-    enra: [
-      { value: 287, context: "Before her powers were drained" },
-      { value: 12, context: "After her powers were drained" }
-    ],
-    forms: ["Calm Super"],
-    variations: []
-  },
-  {
-    name: "Karo",
-    description: "Speedster grandfather of Sinco, the reason Docaci and Sinco are speedsters, Karo is the first person to go super on earth",
-    birthday: "1974-06-23",
-    enra: [
-      { value: 416, context: "After going super for the first time" },
-      { value: 334, context: "After getting speedster powers", formBaseEnra: true },
-      { value: 2, context: "Before getting speedster powers" }
-    ],
-    forms: ["Super"],
-    variations: []
-  }
-];
-
+// Form multipliers map stays as-is for easy updating
 export const allFormMultipliers = {
   "Super": 1.10,
   "Calm Super": 1.05,
@@ -94,3 +8,123 @@ export const allFormMultipliers = {
   "Hyper Rage Form": 1.90,
   "Hyper Remnant": 1.50
 };
+
+/**
+ * Helper: generate enra readings array
+ * 
+ * @param {Array} readings Array of tuples [value, context, isBase?]
+ * @returns {Array} enra objects
+ */
+function generateEnra(readings) {
+  return readings.map(([value, context, formBaseEnra = false]) => ({
+    value,
+    context,
+    ...(formBaseEnra ? { formBaseEnra: true } : {})
+  }));
+}
+
+/**
+ * Helper: create character profile object easily
+ * 
+ * @param {string} name
+ * @param {string} description
+ * @param {string} birthday  - YYYY-MM-DD
+ * @param {Array} enraReadings - array of tuples [value, context, formBaseEnra?]
+ * @param {Array} forms - array of form names (strings)
+ * @param {Array} variations - array of variations (optional)
+ * @returns {object} character profile
+ */
+export function createCharacter(name, description, birthday, enraReadings, forms = [], variations = []) {
+  return {
+    name,
+    description,
+    birthday,
+    enra: generateEnra(enraReadings),
+    forms,
+    variations
+  };
+}
+
+// Now export the characters array with simple calls
+export const characters = [
+  createCharacter(
+    "Sinco",
+    "Teenage Speedster Hero of Tempo City",
+    "2011-09-19",
+    [
+      [1080, "After training in the afterlife with Karo"],
+      [487, "Before afterlife training"],
+      [380, "After training with Crepode for the first time"],
+      [295, "Before training with Crepode for the first time"]
+    ],
+    ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"]
+  ),
+
+  createCharacter(
+    "TJ",
+    "Teenage Speedster Hero of Boredom City",
+    "2011-04-03",
+    [
+      [320, "After gaining powers"],
+      [10, "Before gaining powers"]
+    ],
+    ["Calm Super"]
+  ),
+
+  createCharacter(
+    "Tirok",
+    "Anti-Hero engineer and scientist",
+    "2000-04-05",
+    [
+      [1537, "After getting his wish for power"],
+      [1, "Since birth"]
+    ]
+  ),
+
+  createCharacter(
+    "Osin",
+    "A clone of Sinco made by Tirok",
+    "2023-10-08",
+    [
+      [1257, "Rage Boost power during Titan-T arc (Volume 4)"],
+      [1020, "Resting power during Titan-T arc (Volume 4)", true],
+      [855, "During Squad 2 Invasion with a Rage boost"],
+      [630, "After Squad 2 Invasion is over"],
+      [570, "During Squad 2 Invasion"],
+      [313, "In creation"]
+    ],
+    ["Calm Super", "Hyper Form", "Hyper Rage Form"]
+  ),
+
+  createCharacter(
+    "Crepode",
+    "Famous creator of the Fuerza technique used by Sinco",
+    null,
+    [
+      [453, "Since Sinco met him"]
+    ]
+  ),
+
+  createCharacter(
+    "Docaci",
+    "Speedster mother of Sinco, got her powers drained by Tirok",
+    "1993-03-14",
+    [
+      [287, "Before her powers were drained"],
+      [12, "After her powers were drained"]
+    ],
+    ["Calm Super"]
+  ),
+
+  createCharacter(
+    "Karo",
+    "Speedster grandfather of Sinco, the reason Docaci and Sinco are speedsters, Karo is the first person to go super on earth",
+    "1974-06-23",
+    [
+      [416, "After going super for the first time"],
+      [334, "After getting speedster powers", true],
+      [2, "Before getting speedster powers"]
+    ],
+    ["Super"]
+  )
+];
