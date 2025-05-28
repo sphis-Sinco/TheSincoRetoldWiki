@@ -48,17 +48,28 @@ export function createCharacter(name, description, birthday, enraReadings, forms
 // Now export the characters array with simple calls
 export const characters = [
   createCharacter(
-    "Sinco",
-    "Teenage Speedster Hero of Tempo City",
-    "2011-09-19",
-    [
-      [1080, "After training in the afterlife with Karo"],
-      [487, "Before afterlife training"],
-      [380, "After training with Crepode for the first time"],
-      [295, "Before training with Crepode for the first time"]
-    ],
-    ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"]
-  ),
+  "Sinco",
+  "Teenage Speedster Hero of Tempo City",
+  "2011-09-19",
+  [
+    [1080, "After training in the afterlife with Karo"],
+    [487, "Before afterlife training"],
+    [380, "After training with Crepode for the first time"],
+    [295, "Before training with Crepode for the first time"]
+  ],
+  ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
+  [
+    createCharacter(
+      "Sinco (Timeline V5B)",
+      "Sinco months later after failing to make his wish in the Titan-T saga",
+      "2011-09-19',
+      [
+        [1662, "When coming to Timeline V5A / When creating Timeline V5C"]
+      ],
+      ["Hyper Form"]
+    )
+  ]
+),
 
   createCharacter(
     "TJ",
