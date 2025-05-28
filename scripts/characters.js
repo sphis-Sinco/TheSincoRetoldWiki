@@ -162,27 +162,34 @@ function renderCharacters() {
       card.appendChild(enraSection);
     }
 
-    // FORM VARIATIONS Section (show calculated powers per form for each Enra reading)
+    // FORM VARIATIONS Section (show calculated powers only for the base Enra reading)
     if (char.forms && char.forms.length > 0 && char.enra && char.enra.length > 0) {
+      // Find the base Enra reading with formBaseEnra = true
+      let baseReading = char.enra.find(e => e.formBaseEnra);
+
+      // If no explicit base reading, optionally use the max value reading:
+      if (!baseReading) {
+        baseReading = char.enra.reduce((a, b) => (a.value > b.value ? a : b));
+      }
+
       const formSection = document.createElement("div");
       formSection.className = "form-footnote";
 
       const formHeader = document.createElement("p");
-      formHeader.innerHTML = `<strong>Form Variations for each Enra:</strong>`;
+      formHeader.innerHTML = `<strong>Form Variations for Base Enra Reading:</strong>`;
       formSection.appendChild(formHeader);
 
-      char.enra.forEach(reading => {
-        const label = document.createElement("p");
-        label.style.marginTop = "0.5em";
-        label.innerHTML = `<u>${reading.context} (${reading.value} Enra):</u>`;
-        formSection.appendChild(label);
+      const label = document.createElement("p");
+      label.style.marginTop = "0.5em";
+      label.style.fontWeight = "bold";
+      label.innerHTML = `<u>${baseReading.context} (${baseReading.value} Enra):</u>`;
+      formSection.appendChild(label);
 
-        const variationLines = getFormPowers(reading.value, char.forms);
-        variationLines.forEach(line => {
-          const p = document.createElement("p");
-          p.textContent = "→ " + line;
-          formSection.appendChild(p);
-        });
+      const variationLines = getFormPowers(baseReading.value, char.forms);
+      variationLines.forEach(line => {
+        const p = document.createElement("p");
+        p.textContent = "→ " + line;
+        formSection.appendChild(p);
       });
 
       card.appendChild(formSection);
@@ -225,33 +232,4 @@ function generateExportJSON(includeForms = true, includeVariations = true) {
       result.variations = character.variations || [];
     }
     return result;
-  }), null, 2);
-}
-
-// Download JSON helper function to trigger file download
-function downloadJSON(data, filename) {
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
-// On DOM ready, render characters and attach button listeners
-document.addEventListener("DOMContentLoaded", () => {
-  renderCharacters();
-
-  document.getElementById("downloadWithForms")?.addEventListener("click", () => {
-    const json = generateExportJSON(true, true);  // include forms and variations
-    downloadJSON(json, "characters_with_forms_and_variations.json");
-  });
-
-  document.getElementById("downloadWithoutForms")?.addEventListener("click", () => {
-    const json = generateExportJSON(false, false);  // exclude forms and variations
-    downloadJSON(json, "characters_basic.json");
-  });
-});
+  }), null,
