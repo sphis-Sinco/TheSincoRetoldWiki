@@ -1,23 +1,45 @@
 /* style.css */
 
+/* Base typography and colors */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f2f2f2;
+  background-color: #121212; /* Dark theme default */
   margin: 0;
   padding: 0;
-  color: #333;
+  color: #f0f0f0;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Light theme overrides */
+body.light-theme {
+  background-color: #f2f2f2;
+  color: #333;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Header */
 header {
   background-color: #222;
   color: #fff;
   padding: 2rem;
   text-align: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+body.light-theme header {
+  background-color: #ddd;
+  color: #222;
+}
+
+/* Navigation */
 nav {
   background-color: #444;
   padding: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+body.light-theme nav {
+  background-color: #eee;
 }
 
 nav ul {
@@ -36,45 +58,101 @@ nav a {
   color: #fff;
   text-decoration: none;
   font-weight: bold;
+  transition: color 0.3s ease;
 }
 
+body.light-theme nav a {
+  color: #222;
+}
+
+/* Main content */
 main {
   max-width: 900px;
   margin: 2rem auto;
   padding: 0 1rem;
 }
 
+/* Sections */
 section {
   margin-bottom: 2rem;
-  background: white;
+  background: #1e1e1e;
   padding: 1.5rem;
   border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.light-theme section {
+  background: #fff;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
+/* Footer */
 footer {
   text-align: center;
   background-color: #222;
   color: white;
   padding: 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+body.light-theme footer {
+  background-color: #ddd;
+  color: #222;
+}
+
+/* Article List styling */
+#article-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#article-list li {
+  background: #1e1e1e;
+  color: #f0f0f0;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+}
+
+#article-list li:hover {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+body.light-theme #article-list li {
+  background: #fff;
+  color: #222;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+body.light-theme #article-list li:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Character list grid */
 #character-list ul {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1rem;
   padding: 0;
   list-style: none;
+  margin: 0;
 }
 
+/* Character grid with more padding and spacing */
 .character-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 2rem; /* Increased gap between cards */
+  gap: 2rem;
   margin-top: 2rem;
-  padding: 1rem; /* Optional padding around the grid itself */
+  padding: 1rem;
 }
 
+/* Individual character cards */
 .character-card {
   background: #1e1e1e;
   border: 1px solid #333;
@@ -82,28 +160,32 @@ footer {
   border-radius: 8px;
   color: #f0f0f0;
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
-  transition: transform 0.2s ease;
-}
-
-.character-card:hover {
-  transform: translateY(-5px);
-}
-
-#character-list ul,
-#character-list li {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.character-card {
+  transition: transform 0.2s ease, background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  cursor: default;
 }
 
+.character-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+body.light-theme .character-card {
+  background: #fff;
+  color: #222;
+  border-color: #ccc;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+body.light-theme .character-card:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* Button styling */
 button {
   background-color: #1e1e1e;
   color: #f0f0f0;
@@ -112,7 +194,7 @@ button {
   font-size: 1rem;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease, transform 0.2s ease, color 0.3s ease, border-color 0.3s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   margin: 0.5rem;
 }
@@ -122,9 +204,69 @@ button:hover {
   transform: translateY(-3px);
 }
 
+body.light-theme button {
+  background-color: #ddd;
+  color: #222;
+  border-color: #bbb;
+}
+
+body.light-theme button:hover {
+  background-color: #ccc;
+}
+
+/* Button group layout */
 .button-group {
   display: flex;
   justify-content: center;
   gap: 1rem;
   margin-bottom: 2rem;
+}
+
+/* Fade-in animation keyframes */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animate character cards and article list items */
+.character-card,
+#article-list li {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.character-card:nth-child(1),
+#article-list li:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.character-card:nth-child(2),
+#article-list li:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+/* Add more nth-child animations if needed for stagger */
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .character-grid,
+  #article-list ul {
+    grid-template-columns: 1fr; /* Stack items vertically on small screens */
+    gap: 1.5rem;
+  }
+
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  nav li {
+    margin: 0.5rem 0;
+  }
 }
