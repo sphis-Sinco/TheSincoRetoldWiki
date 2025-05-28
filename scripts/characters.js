@@ -77,15 +77,15 @@ const characters = [
   }
 ];
 
-// Form multipliers for calculating Enra power
+// Form multipliers for calculating Enra power (updated percentages)
 const allFormMultipliers = {
-  "Super": 1.5,
-  "Calm Super": 1.2,
-  "Super Grade 2": 1.8,
-  "Fury Form": 2.0,
-  "Hyper Form": 2.5,
-  "Hyper Remnant": 3.0,
-  "Hyper Rage Form": 2.7
+  "Super": 1.10,
+  "Calm Super": 1.05,
+  "Super Grade 2": 1.20,
+  "Fury Form": 1.40,
+  "Hyper Form": 1.70,
+  "Hyper Rage Form": 1.90,
+  "Hyper Remnant": 1.50
 };
 
 // Helper: Get the base Enra object (value and context) for a character
