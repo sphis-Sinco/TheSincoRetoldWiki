@@ -109,26 +109,23 @@ const allFormMultipliers = {
   }
 };
 
-// Helper: Get the base Enra object (value and context) for a character
+// Find base Enra
 function getFormBaseEnra(char) {
-  // Try to find the one marked as formBaseEnra, or just pick the highest if not
-  const base = char.enra.find(e => e.formBaseEnra) || char.enra.reduce((a, b) => (a.value > b.value ? a : b), { value: 0 });
-  return base;
+  return char.enra.find(e => e.formBaseEnra) || char.enra.reduce((a, b) => (a.value > b.value ? a : b), { value: 0 });
 }
 
-// Helper: Given a base Enra and a list of form names, return an array of strings with form powers
-function getFormPowers(baseEnra, allowedForms) {
+// Get calculated form powers
+function getFormPowers(baseValue, allowedForms) {
   return allowedForms.map(formName => {
     const formData = allFormMultipliers[formName];
     if (!formData) return `${formName}: Unknown multiplier`;
 
-    const { multiplier, description } = formData;
-    const power = (baseEnra * multiplier).toFixed(2);
-    return `${formName} (${multiplier}x): ${power} Enra — ${description}`;
+    const power = (baseValue * formData.multiplier).toFixed(2);
+    return `${formName} (${formData.multiplier}x): ${power} Enra — ${formData.description}`;
   });
 }
 
-// Renders character cards with form footnotes
+// Render all character cards
 function renderCharacters() {
   const container = document.getElementById("character-list");
   container.innerHTML = "";
@@ -145,34 +142,41 @@ function renderCharacters() {
     desc.textContent = char.description;
     card.appendChild(desc);
 
-    // Add form footnotes based on character's own forms
+    if (char.birthday) {
+      const bday = document.createElement("p");
+      bday.textContent = `Birthday: ${char.birthday}`;
+      card.appendChild(bday);
+    }
+
+    const baseEnra = getFormBaseEnra(char);
+    const enraElem = document.createElement("p");
+    enraElem.textContent = `Base Enra: ${baseEnra.value.toFixed(2)} — "${baseEnra.context}"`;
+    card.appendChild(enraElem);
+
     if (char.forms && char.forms.length > 0) {
-      const baseEnra = getFormBaseEnra(char);
-      if (baseEnra) {
-        const footnote = document.createElement("div");
-        footnote.className = "form-footnote";
+      const footnote = document.createElement("div");
+      footnote.className = "form-footnote";
 
-        const formTitle = document.createElement("p");
-        formTitle.textContent = `Form powers (based on ${baseEnra.value.toFixed(2)} Enra — "${baseEnra.context}"):`;
-        footnote.appendChild(formTitle);
+      const formTitle = document.createElement("p");
+      formTitle.textContent = "Form Powers:";
+      footnote.appendChild(formTitle);
 
-        const formReadings = getFormPowers(baseEnra.value, char.forms);
+      const formReadings = getFormPowers(baseEnra.value, char.forms);
 
-        formReadings.forEach(text => {
-          const p = document.createElement("p");
-          p.textContent = "• " + text;
-          footnote.appendChild(p);
-        });
+      formReadings.forEach(text => {
+        const p = document.createElement("p");
+        p.textContent = "• " + text;
+        footnote.appendChild(p);
+      });
 
-        card.appendChild(footnote);
-      }
+      card.appendChild(footnote);
     }
 
     container.appendChild(card);
   });
 }
 
-// Export character data as JSON, optionally including form power calculations
+// Export to JSON
 function generateExportJSON(includeForms = true) {
   const exportData = characters.map(char => {
     const base = getFormBaseEnra(char);
@@ -180,11 +184,12 @@ function generateExportJSON(includeForms = true) {
 
     if (includeForms && char.forms && char.forms.length > 0) {
       char.forms.forEach(formName => {
-        const multiplier = allFormMultipliers[formName];
-        if (multiplier) {
+        const formData = allFormMultipliers[formName];
+        if (formData) {
           forms[formName] = {
-            enra: +(base.value * multiplier).toFixed(2),
-            multiplier
+            enra: +(base.value * formData.multiplier).toFixed(2),
+            multiplier: formData.multiplier,
+            description: formData.description
           };
         }
       });
@@ -195,6 +200,7 @@ function generateExportJSON(includeForms = true) {
       description: char.description,
       birthday: char.birthday || undefined,
       baseEnra: base.value,
+      baseEnraContext: base.context,
       forms
     };
   });
@@ -202,7 +208,7 @@ function generateExportJSON(includeForms = true) {
   return JSON.stringify(exportData, null, 2);
 }
 
-// Example usage
+// Setup on DOM load
 document.addEventListener("DOMContentLoaded", () => {
   renderCharacters();
 
