@@ -10,7 +10,8 @@ const characters = [
       { value: 380, context: "After training with Crepode for the first time" },
       { value: 295, context: "Before training with Crepode for the first time" }
     ],
-    forms: ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"]
+    forms: ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
+    variations: []
   },
   {
     name: "TJ",
@@ -20,7 +21,8 @@ const characters = [
       { value: 320, context: "After gaining powers" },
       { value: 10, context: "Before gaining powers" }
     ],
-    forms: ["Calm Super"]
+    forms: ["Calm Super"],
+    variations: []
   },
   {
     name: "Tirok",
@@ -30,7 +32,8 @@ const characters = [
       { value: 1537, context: "After getting his wish for power" },
       { value: 1, context: "Since birth" }
     ],
-    forms: []
+    forms: [],
+    variations: []
   },
   {
     name: "Osin",
@@ -44,7 +47,8 @@ const characters = [
       { value: 570, context: "During Squad 2 Invasion" },
       { value: 313, context: "In creation" }
     ],
-    forms: ["Calm Super", "Hyper Form", "Hyper Rage Form"]
+    forms: ["Calm Super", "Hyper Form", "Hyper Rage Form"],
+    variations: []
   },
   {
     name: "Crepode",
@@ -52,7 +56,8 @@ const characters = [
     enra: [
       { value: 453, context: "Since Sinco met him" }
     ],
-    forms: []
+    forms: [],
+    variations: []
   },
   {
     name: "Docaci",
@@ -62,7 +67,8 @@ const characters = [
       { value: 287, context: "Before her powers were drained" },
       { value: 12, context: "After her powers were drained" }
     ],
-    forms: ["Calm Super"]
+    forms: ["Calm Super"],
+    variations: []
   },
   {
     name: "Karo",
@@ -73,64 +79,49 @@ const characters = [
       { value: 334, context: "After getting speedster powers", formBaseEnra: true },
       { value: 2, context: "Before getting speedster powers" }
     ],
-    forms: ["Super"]
+    forms: ["Super"],
+    variations: []
   }
 ];
 
-// Form multipliers with descriptions
+// Form multipliers without descriptions for cleaner JSON
 const allFormMultipliers = {
-  "Super": {
-    multiplier: 1.10,
-    description: "An awakened state that boosts all stats slightly. Requires emotional spark."
-  },
-  "Calm Super": {
-    multiplier: 1.05,
-    description: "A relaxed, efficient version of Super that maintains control and stamina."
-  },
-  "Super Grade 2": {
-    multiplier: 1.20,
-    description: "A more refined Super form with better power output and stability."
-  },
-  "Fury Form": {
-    multiplier: 1.40,
-    description: "Power driven by rage, greatly enhancing speed and attack at the cost of control."
-  },
-  "Hyper Form": {
-    multiplier: 1.70,
-    description: "A high-level transformation with tremendous speed and aura output."
-  },
-  "Hyper Rage Form": {
-    multiplier: 1.90,
-    description: "An unstable, volatile form drawn from extreme fury and focus combined."
-  },
-  "Hyper Remnant": {
-    multiplier: 1.50,
-    description: "Residual Hyper energy left behind that can act independently for short bursts."
-  }
+  "Super": 1.10,
+  "Calm Super": 1.05,
+  "Super Grade 2": 1.20,
+  "Fury Form": 1.40,
+  "Hyper Form": 1.70,
+  "Hyper Rage Form": 1.90,
+  "Hyper Remnant": 1.50
 };
 
-// Find base Enra
+// Find base Enra (for future use, currently not used directly in rendering)
 function getFormBaseEnra(char) {
   const explicit = char.enra.find(e => e.formBaseEnra);
   if (explicit) return explicit;
   if (!char.enra || char.enra.length === 0) return { value: 0, context: "No Enra data available" };
+  // Return the max Enra reading by value
   return char.enra.reduce((a, b) => (a.value > b.value ? a : b));
 }
 
-// Get calculated form powers
+// Calculate power values for each form based on base Enra value and allowed forms
 function getFormPowers(baseValue, allowedForms) {
   return allowedForms.map(formName => {
-    const formData = allFormMultipliers[formName];
-    if (!formData) return `${formName}: Unknown multiplier`;
+    const multiplier = allFormMultipliers[formName];
+    if (!multiplier) return `${formName}: Unknown multiplier`;
 
-    const power = (baseValue * formData.multiplier).toFixed(2);
-    return `${formName} (${formData.multiplier}x): ${power} Enra — ${formData.description}`;
+    const power = (baseValue * multiplier).toFixed(2);
+    return `${formName} (${multiplier}x): ${power} Enra`;
   });
 }
 
-// Render all character cards
+// Render all character cards into the container element with id "character-list"
 function renderCharacters() {
   const container = document.getElementById("character-list");
+  if (!container) {
+    console.warn("Container with id 'character-list' not found.");
+    return;
+  }
   container.innerHTML = "";
 
   characters.forEach(char => {
@@ -154,23 +145,25 @@ function renderCharacters() {
     }
 
     // ENRA Readings Section
-    const enraSection = document.createElement("div");
-    enraSection.className = "enra-section";
+    if (char.enra && char.enra.length > 0) {
+      const enraSection = document.createElement("div");
+      enraSection.className = "enra-section";
 
-    const enraHeader = document.createElement("p");
-    enraHeader.innerHTML = `<strong>All Enra Readings:</strong>`;
-    enraSection.appendChild(enraHeader);
+      const enraHeader = document.createElement("p");
+      enraHeader.innerHTML = `<strong>All Enra Readings:</strong>`;
+      enraSection.appendChild(enraHeader);
 
-    char.enra.forEach(reading => {
-      const readingText = document.createElement("p");
-      readingText.textContent = `• ${reading.value} — "${reading.context}"`;
-      enraSection.appendChild(readingText);
-    });
+      char.enra.forEach(reading => {
+        const readingText = document.createElement("p");
+        readingText.textContent = `• ${reading.value} — "${reading.context}"`;
+        enraSection.appendChild(readingText);
+      });
 
-    card.appendChild(enraSection);
+      card.appendChild(enraSection);
+    }
 
-    // FORM VARIATIONS Section
-    if (char.forms && char.forms.length > 0) {
+    // FORM VARIATIONS Section (show calculated powers per form for each Enra reading)
+    if (char.forms && char.forms.length > 0 && char.enra && char.enra.length > 0) {
       const formSection = document.createElement("div");
       formSection.className = "form-footnote";
 
@@ -195,14 +188,30 @@ function renderCharacters() {
       card.appendChild(formSection);
     }
 
+    // VARIATIONS Section
+    if (char.variations && char.variations.length > 0) {
+      const variationSection = document.createElement("div");
+      variationSection.className = "variation-section";
+
+      const variationHeader = document.createElement("p");
+      variationHeader.innerHTML = `<strong>Variations:</strong>`;
+      variationSection.appendChild(variationHeader);
+
+      char.variations.forEach(variation => {
+        const variationText = document.createElement("p");
+        variationText.textContent = `• ${variation}`;
+        variationSection.appendChild(variationText);
+      });
+
+      card.appendChild(variationSection);
+    }
+
     container.appendChild(card);
   });
 }
 
-// Assume characters is a global array of character data
-// Example: const characters = [ { name: 'Sinco', enra: 120, forms: [...] }, ... ];
-
-function generateExportJSON(includeForms = true) {
+// Generate JSON export with options to include forms and variations
+function generateExportJSON(includeForms = true, includeVariations = true) {
   return JSON.stringify(characters.map(character => {
     const result = {
       name: character.name,
@@ -212,10 +221,14 @@ function generateExportJSON(includeForms = true) {
     if (includeForms) {
       result.forms = character.forms || [];
     }
+    if (includeVariations) {
+      result.variations = character.variations || [];
+    }
     return result;
   }), null, 2);
 }
 
+// Download JSON helper function to trigger file download
 function downloadJSON(data, filename) {
   const blob = new Blob([data], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -228,16 +241,17 @@ function downloadJSON(data, filename) {
   URL.revokeObjectURL(url);
 }
 
+// On DOM ready, render characters and attach button listeners
 document.addEventListener("DOMContentLoaded", () => {
-  renderCharacters(); // Your existing function to display characters
+  renderCharacters();
 
-  document.getElementById("downloadWithForms").addEventListener("click", () => {
-    const json = generateExportJSON(true);
-    downloadJSON(json, "characters_with_forms.json");
+  document.getElementById("downloadWithForms")?.addEventListener("click", () => {
+    const json = generateExportJSON(true, true);  // include forms and variations
+    downloadJSON(json, "characters_with_forms_and_variations.json");
   });
 
-  document.getElementById("downloadWithoutForms").addEventListener("click", () => {
-    const json = generateExportJSON(false);
-    downloadJSON(json, "characters_without_forms.json");
+  document.getElementById("downloadWithoutForms")?.addEventListener("click", () => {
+    const json = generateExportJSON(false, false);  // exclude forms and variations
+    downloadJSON(json, "characters_basic.json");
   });
 });
