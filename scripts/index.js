@@ -1,20 +1,29 @@
-// script.js
+// scripts/index.js
 
-document.addEventListener("DOMContentLoaded", () => {
-  const articleList = document.getElementById("article-list");
-  const featuredArticles = []; // Empty for now
+document.addEventListener('DOMContentLoaded', () => {
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  const body = document.body;
 
-  articleList.innerHTML = "";
-
-  if (featuredArticles.length === 0) {
-    const fallback = document.createElement("li");
-    fallback.textContent = "No featured articles available at the moment. Check back soon!";
-    articleList.appendChild(fallback);
-  } else {
-    featuredArticles.forEach(article => {
-      const li = document.createElement("li");
-      li.textContent = article;
-      articleList.appendChild(li);
-    });
+  // Function to apply the saved theme or default to dark
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      body.classList.add('light-theme');
+      themeToggleBtn.textContent = 'Switch to Dark Theme';
+    } else {
+      body.classList.remove('light-theme');
+      themeToggleBtn.textContent = 'Switch to Light Theme';
+    }
   }
+
+  // Load saved theme from localStorage
+  const savedTheme = localStorage.getItem('theme');
+  applyTheme(savedTheme || 'dark');
+
+  // Toggle theme on button click
+  themeToggleBtn.addEventListener('click', () => {
+    const currentTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    applyTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  });
 });
