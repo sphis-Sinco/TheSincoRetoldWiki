@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function generateExportJSON(includeForms = true) {
   const enrichedCharacters = characters.map(char => {
-    const baseEnraEntry = char.enra?.find(e => e.formBaseEnra === true);
+    const baseEnraEntry = getFormBaseEnra(char); // Use the helper here!
     const baseEnra = baseEnraEntry ? baseEnraEntry.value : null;
 
     let forms = {};
@@ -275,7 +275,6 @@ function generateExportJSON(includeForms = true) {
   const link = document.createElement("a");
   link.href = url;
 
-  // Different filename depending on includeForms
   link.download = includeForms ? "characters-with-forms.json" : "characters.json";
 
   document.body.appendChild(link);
