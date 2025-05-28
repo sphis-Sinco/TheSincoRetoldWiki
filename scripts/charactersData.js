@@ -1,12 +1,12 @@
 // Form multipliers map stays as-is for easy updating
 export const allFormMultipliers = {
-  "Super": 1.10,
-  "Calm Super": 1.05,
-  "Super Grade 2": 1.20,
-  "Fury Form": 1.40,
-  "Hyper Form": 1.70,
-  "Hyper Rage Form": 1.90,
-  "Hyper Remnant": 1.50,
+  Super: 1.10,
+  CalmSuper: 1.05,
+  SuperGrade2: 1.20,
+  FuryForm: 1.40,
+  HyperForm: 1.70,
+  HyperRageForm: 1.90,
+  HyperRemnant: 1.50,
 };
 
 /**
@@ -14,12 +14,12 @@ export const allFormMultipliers = {
  */
 export const FormNames = Object.freeze({
   SUPER: "Super",
-  CALM_SUPER: "Calm Super",
-  SUPER_GRADE_2: "Super Grade 2",
-  FURY_FORM: "Fury Form",
-  HYPER_FORM: "Hyper Form",
-  HYPER_RAGE_FORM: "Hyper Rage Form",
-  HYPER_REMNANT: "Hyper Remnant",
+  CALM_SUPER: "CalmSuper",
+  SUPER_GRADE_2: "SuperGrade2",
+  FURY_FORM: "FuryForm",
+  HYPER_FORM: "HyperForm",
+  HYPER_RAGE_FORM: "HyperRageForm",
+  HYPER_REMNANT: "HyperRemnant",
 });
 
 /**
