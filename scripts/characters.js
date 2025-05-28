@@ -77,15 +77,36 @@ const characters = [
   }
 ];
 
-// Form multipliers for calculating Enra power (updated percentages)
+// Form multipliers with descriptions
 const allFormMultipliers = {
-  "Super": 1.10,
-  "Calm Super": 1.05,
-  "Super Grade 2": 1.20,
-  "Fury Form": 1.40,
-  "Hyper Form": 1.70,
-  "Hyper Rage Form": 1.90,
-  "Hyper Remnant": 1.50
+  "Super": {
+    multiplier: 1.10,
+    description: "An awakened state that boosts all stats slightly. Requires emotional spark."
+  },
+  "Calm Super": {
+    multiplier: 1.05,
+    description: "A relaxed, efficient version of Super that maintains control and stamina."
+  },
+  "Super Grade 2": {
+    multiplier: 1.20,
+    description: "A more refined Super form with better power output and stability."
+  },
+  "Fury Form": {
+    multiplier: 1.40,
+    description: "Power driven by rage, greatly enhancing speed and attack at the cost of control."
+  },
+  "Hyper Form": {
+    multiplier: 1.70,
+    description: "A high-level transformation with tremendous speed and aura output."
+  },
+  "Hyper Rage Form": {
+    multiplier: 1.90,
+    description: "An unstable, volatile form drawn from extreme fury and focus combined."
+  },
+  "Hyper Remnant": {
+    multiplier: 1.50,
+    description: "Residual Hyper energy left behind that can act independently for short bursts."
+  }
 };
 
 // Helper: Get the base Enra object (value and context) for a character
@@ -98,11 +119,12 @@ function getFormBaseEnra(char) {
 // Helper: Given a base Enra and a list of form names, return an array of strings with form powers
 function getFormPowers(baseEnra, allowedForms) {
   return allowedForms.map(formName => {
-    const multiplier = allFormMultipliers[formName];
-    if (!multiplier) return `${formName}: Unknown multiplier`;
+    const formData = allFormMultipliers[formName];
+    if (!formData) return `${formName}: Unknown multiplier`;
 
+    const { multiplier, description } = formData;
     const power = (baseEnra * multiplier).toFixed(2);
-    return `${formName} (${multiplier}x): ${power} Enra`;
+    return `${formName} (${multiplier}x): ${power} Enra — ${description}`;
   });
 }
 
