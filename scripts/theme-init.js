@@ -1,7 +1,13 @@
-// scripts/theme-init.js
-const storedTheme = localStorage.getItem("preferredTheme");
-if (storedTheme === "dark") {
-  document.documentElement.classList.add("dark-theme");
-} else if (storedTheme === "light") {
-  document.documentElement.classList.add("light-theme");
+// theme-init.js
+
+const savedTheme = localStorage.getItem('theme') || 'light';
+const darkThemeClass = 'dark-theme';
+const toggleButton = document.getElementById('theme-toggle');
+
+if (savedTheme === 'dark') {
+  document.body.classList.add(darkThemeClass);
+  toggleButton.textContent = 'Switch to Light Theme';
+} else {
+  document.body.classList.remove(darkThemeClass);
+  toggleButton.textContent = 'Switch to Dark Theme';
 }
