@@ -1,3 +1,4 @@
+// Characters array with forms included inside each character object
 const characters = [
   {
     name: "Sinco",
@@ -76,103 +77,69 @@ const characters = [
   }
 ];
 
-// Form multipliers as constants
+// Form multipliers for calculating Enra power
 const allFormMultipliers = {
-  "Super": 1.10,
-  "Calm Super": 1.05,
-  "Super Grade 2": 1.20,
-  "Fury Form": 1.40,
-  "Hyper Form": 1.70,
-  "Hyper Rage Form": 1.90,
-  "Hyper Remnant": 1.50
+  "Super": 1.5,
+  "Calm Super": 1.2,
+  "Super Grade 2": 1.8,
+  "Fury Form": 2.0,
+  "Hyper Form": 2.5,
+  "Hyper Remnant": 3.0,
+  "Hyper Rage Form": 2.7
 };
 
-// Characters that have forms and their allowed forms
-const characterForms = {
-  "Sinco": ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
-  "TJ": ["Calm Super"],
-  "Osin": ["Calm Super", "Hyper Form", "Hyper Rage Form"],
-  "Docaci": ["Calm Super"],
-  "Karo": ["Super"]
-};
+// Helper: Calculate base Enra for a character (example uses strength * speed / 10)
+function getBaseEnra(char) {
+  return (char.strength * char.speed) / 10;
+}
 
-// Helper to get highest enra reading and the one marked as formBaseEnra if any
+// Helper: Get the base Enra object (value and context) for a character
 function getFormBaseEnra(char) {
-  if (!char.enra || char.enra.length === 0) return null;
-  // Look for formBaseEnra true first
-  const base = char.enra.find(e => e.formBaseEnra === true);
-  if (base) return base;
-  // Otherwise return highest value
-  return char.enra.reduce((max, e) => e.value > max.value ? e : max, char.enra[0]);
+  // Here we define base enra with context string - you can customize as needed
+  const value = getBaseEnra(char);
+  return { value, context: "Base power" };
 }
 
-// Generate form power readings with multiplier text
-function getFormPowers(baseValue, forms) {
-  return forms.map(form => {
-    const multiplier = allFormMultipliers[form];
-    if (!multiplier) return null;
-    const power = Math.round(baseValue * multiplier);
-    return `${form}: ${power} (x${multiplier})`;
-  }).filter(Boolean);
+// Helper: Given a base Enra and a list of form names, return an array of strings with form powers
+function getFormPowers(baseEnra, allowedForms) {
+  return allowedForms.map(formName => {
+    const multiplier = allFormMultipliers[formName];
+    if (!multiplier) return `${formName}: Unknown multiplier`;
+
+    const power = (baseEnra * multiplier).toFixed(2);
+    return `${formName} (${multiplier}x): ${power} Enra`;
+  });
 }
 
-// Render characters into the page
-function renderCharacters(list) {
-  const container = document.getElementById("character-list");
+// Renders character cards with stats and form footnotes
+function renderCharacters() {
+  const container = document.getElementById("characters-container");
   container.innerHTML = "";
 
-  list.forEach((char) => {
-    const card = document.createElement("li");
+  characters.forEach(char => {
+    const card = document.createElement("div");
     card.className = "character-card";
 
-    const name = document.createElement("h2");
-    name.textContent = char.name;
+    const nameElem = document.createElement("h3");
+    nameElem.textContent = char.name;
+    card.appendChild(nameElem);
 
-    const description = document.createElement("p");
-    description.textContent = char.description;
+    const stats = document.createElement("p");
+    stats.textContent = `Age: ${char.age}, Strength: ${char.strength}, Speed: ${char.speed}`;
+    card.appendChild(stats);
 
-    const enraBlock = document.createElement("div");
-    const enraTitle = document.createElement("p");
-    enraTitle.textContent = "Enra Readings:";
-    enraBlock.appendChild(enraTitle);
-
-    if (Array.isArray(char.enra) && char.enra.length > 0) {
-      // Sort descending by value without mutating original array
-      const sortedReadings = [...char.enra].sort((a, b) => b.value - a.value);
-      sortedReadings.forEach((reading) => {
-        const readingText = document.createElement("p");
-        readingText.textContent = `• ${reading.value} (${reading.context})`;
-        enraBlock.appendChild(readingText);
-      });
-    } else {
-      const noEnra = document.createElement("p");
-      noEnra.textContent = "Unknown";
-      enraBlock.appendChild(noEnra);
-    }
-
-    const birthday = document.createElement("p");
-    birthday.textContent = `Birthday: ${char.birthday || "Unknown"}`;
-
-    card.appendChild(name);
-    card.appendChild(description);
-    card.appendChild(enraBlock);
-
-    // Add form footnotes if character has forms
-    if (characterForms[char.name]) {
+    // Add form footnotes based on character's own forms
+    if (char.forms && char.forms.length > 0) {
       const baseEnra = getFormBaseEnra(char);
       if (baseEnra) {
         const footnote = document.createElement("div");
         footnote.className = "form-footnote";
 
         const formTitle = document.createElement("p");
-        formTitle.textContent = `Form powers (based on ${baseEnra.value} Enra — "${baseEnra.context}"):`;
+        formTitle.textContent = `Form powers (based on ${baseEnra.value.toFixed(2)} Enra — "${baseEnra.context}"):`;
         footnote.appendChild(formTitle);
 
-        // Filter allowed forms, removing excluded forms per character rules
-        const allowedForms = characterForms[char.name];
-
-        // Calculate form powers with multipliers and include multiplier in parentheses
-        const formReadings = getFormPowers(baseEnra.value, allowedForms);
+        const formReadings = getFormPowers(baseEnra.value, char.forms);
 
         formReadings.forEach(text => {
           const p = document.createElement("p");
@@ -184,80 +151,18 @@ function renderCharacters(list) {
       }
     }
 
-    card.appendChild(birthday);
-
     container.appendChild(card);
   });
 }
 
-// Filter logic for the character list
-function applyFilters() {
-  const nameQuery = document.getElementById("nameFilter").value.trim().toLowerCase();
-  const minEnraInput = document.getElementById("minEnraFilter").value.trim();
-  const minEnra = minEnraInput === "" ? 0 : parseInt(minEnraInput, 10);
-  const bornAfterInput = document.getElementById("birthdayAfterFilter").value;
-  const bornBeforeInput = document.getElementById("birthdayBeforeFilter").value;
-  const bornAfter = bornAfterInput ? new Date(bornAfterInput) : null;
-  const bornBefore = bornBeforeInput ? new Date(bornBeforeInput) : null;
-
-  const filtered = characters.filter((char) => {
-    // Check name
-    if (nameQuery && !char.name.toLowerCase().includes(nameQuery)) return false;
-
-    // Check min Enra reading (highest value)
-    const enraValues = char.enra?.map(r => r.value) || [];
-    const highestEnra = enraValues.length > 0 ? Math.max(...enraValues) : 0;
-    if (highestEnra < minEnra) return false;
-
-    // Check birthday after
-    if (bornAfter && char.birthday) {
-      const bday = new Date(char.birthday);
-      if (bday < bornAfter) return false;
-    } else if (bornAfter && !char.birthday) {
-      // If no birthday info but filtering by date, exclude
-      return false;
-    }
-
-    // Check birthday before
-    if (bornBefore && char.birthday) {
-      const bday = new Date(char.birthday);
-      if (bday > bornBefore) return false;
-    } else if (bornBefore && !char.birthday) {
-      return false;
-    }
-
-    return true;
-  });
-
-  renderCharacters(filtered);
-}
-
-// Reset filters to defaults and show all characters
-function resetFilters() {
-  document.getElementById("nameFilter").value = "";
-  document.getElementById("minEnraFilter").value = "";
-  document.getElementById("birthdayAfterFilter").value = "";
-  document.getElementById("birthdayBeforeFilter").value = "";
-
-  renderCharacters(characters);
-}
-
-// Initialize rendering and event listeners on page load
-document.addEventListener("DOMContentLoaded", () => {
-  renderCharacters(characters);
-
-  document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
-  document.getElementById("resetFiltersBtn").addEventListener("click", resetFilters);
-});
-
+// Export character data as JSON, optionally including form power calculations
 function generateExportJSON(includeForms = true) {
-  const enrichedCharacters = characters.map(char => {
-    const baseEnraEntry = getFormBaseEnra(char); // Use the helper here!
-    const baseEnra = baseEnraEntry ? baseEnraEntry.value : null;
+  const exportData = characters.map(char => {
+    const baseEnra = getBaseEnra(char);
+    const forms = {};
 
-    let forms = {};
-    if (includeForms && baseEnra && characterForms[char.name]) {
-      characterForms[char.name].forEach(formName => {
+    if (includeForms && char.forms && char.forms.length > 0) {
+      char.forms.forEach(formName => {
         const multiplier = allFormMultipliers[formName];
         if (multiplier) {
           forms[formName] = {
@@ -269,33 +174,28 @@ function generateExportJSON(includeForms = true) {
     }
 
     return {
-      ...char,
-      ...(includeForms && Object.keys(forms).length > 0 ? { forms } : {})
+      name: char.name,
+      age: char.age,
+      strength: char.strength,
+      speed: char.speed,
+      baseEnra: +baseEnra.toFixed(2),
+      forms
     };
   });
 
-  const blob = new Blob([JSON.stringify(enrichedCharacters, null, 2)], {
-    type: "application/json"
-  });
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-
-  link.download = includeForms ? "characters-with-forms.json" : "characters.json";
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  return JSON.stringify(exportData, null, 2);
 }
 
-// On DOM ready
+// Example usage
 document.addEventListener("DOMContentLoaded", () => {
-  document.getElementById("downloadWithForms").addEventListener("click", () => generateExportJSON(true));
-  document.getElementById("downloadWithoutForms").addEventListener("click", () => generateExportJSON(false));
+  renderCharacters();
 
-  // other init code
-  renderCharacters(characters);
-  document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
-  document.getElementById("resetFiltersBtn").addEventListener("click", resetFilters);
+  const exportBtn = document.getElementById("export-json-btn");
+  if (exportBtn) {
+    exportBtn.addEventListener("click", () => {
+      const json = generateExportJSON(true);
+      console.log(json);
+      alert("Exported JSON logged to console.");
+    });
+  }
 });
