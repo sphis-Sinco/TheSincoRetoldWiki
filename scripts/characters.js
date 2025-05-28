@@ -111,7 +111,10 @@ const allFormMultipliers = {
 
 // Find base Enra
 function getFormBaseEnra(char) {
-  return char.enra.find(e => e.formBaseEnra) || char.enra.reduce((a, b) => (a.value > b.value ? a : b), { value: 0 });
+  const explicit = char.enra.find(e => e.formBaseEnra);
+  if (explicit) return explicit;
+  if (!char.enra || char.enra.length === 0) return { value: 0, context: "No Enra data available" };
+  return char.enra.reduce((a, b) => (a.value > b.value ? a : b));
 }
 
 // Get calculated form powers
