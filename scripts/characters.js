@@ -130,7 +130,7 @@ function getFormPowers(baseEnra, allowedForms) {
 
 // Renders character cards with form footnotes
 function renderCharacters() {
-  const container = document.getElementById("characters-container");
+  const container = document.getElementById("character-list");
   container.innerHTML = "";
 
   characters.forEach(char => {
