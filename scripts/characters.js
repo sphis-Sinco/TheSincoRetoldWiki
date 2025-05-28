@@ -137,6 +137,7 @@ function renderCharacters() {
     const card = document.createElement("div");
     card.className = "character-card";
 
+    // Name & Description
     const nameElem = document.createElement("h3");
     nameElem.textContent = char.name;
     card.appendChild(nameElem);
@@ -145,34 +146,53 @@ function renderCharacters() {
     desc.textContent = char.description;
     card.appendChild(desc);
 
+    // Birthday (if present)
     if (char.birthday) {
       const bday = document.createElement("p");
       bday.textContent = `Birthday: ${char.birthday}`;
       card.appendChild(bday);
     }
 
-    const baseEnra = getFormBaseEnra(char);
-    const enraElem = document.createElement("p");
-    enraElem.textContent = `Base Enra: ${baseEnra.value.toFixed(2)} — "${baseEnra.context}"`;
-    card.appendChild(enraElem);
+    // ENRA Readings Section
+    const enraSection = document.createElement("div");
+    enraSection.className = "enra-section";
 
+    const enraHeader = document.createElement("p");
+    enraHeader.innerHTML = `<strong>All Enra Readings:</strong>`;
+    enraSection.appendChild(enraHeader);
+
+    char.enra.forEach(reading => {
+      const readingText = document.createElement("p");
+      readingText.textContent = `• ${reading.value} — "${reading.context}"`;
+      enraSection.appendChild(readingText);
+    });
+
+    card.appendChild(enraSection);
+
+    // FORM VARIATIONS Section
     if (char.forms && char.forms.length > 0) {
-      const footnote = document.createElement("div");
-      footnote.className = "form-footnote";
+      const formSection = document.createElement("div");
+      formSection.className = "form-footnote";
 
-      const formTitle = document.createElement("p");
-      formTitle.textContent = "Form Powers:";
-      footnote.appendChild(formTitle);
+      const formHeader = document.createElement("p");
+      formHeader.innerHTML = `<strong>Form Variations for each Enra:</strong>`;
+      formSection.appendChild(formHeader);
 
-      const formReadings = getFormPowers(baseEnra.value, char.forms);
+      char.enra.forEach(reading => {
+        const label = document.createElement("p");
+        label.style.marginTop = "0.5em";
+        label.innerHTML = `<u>${reading.context} (${reading.value} Enra):</u>`;
+        formSection.appendChild(label);
 
-      formReadings.forEach(text => {
-        const p = document.createElement("p");
-        p.textContent = "• " + text;
-        footnote.appendChild(p);
+        const variationLines = getFormPowers(reading.value, char.forms);
+        variationLines.forEach(line => {
+          const p = document.createElement("p");
+          p.textContent = "→ " + line;
+          formSection.appendChild(p);
+        });
       });
 
-      card.appendChild(footnote);
+      card.appendChild(formSection);
     }
 
     container.appendChild(card);
