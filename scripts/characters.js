@@ -8,7 +8,8 @@ const characters = [
       { value: 487, context: "Before afterlife training" },
       { value: 380, context: "After training with Crepode for the first time" },
       { value: 295, context: "Before training with Crepode for the first time" }
-    ]
+    ],
+    forms: ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"]
   },
   {
     name: "TJ",
@@ -17,7 +18,8 @@ const characters = [
     enra: [
       { value: 320, context: "After gaining powers" },
       { value: 10, context: "Before gaining powers" }
-    ]
+    ],
+    forms: ["Calm Super"]
   },
   {
     name: "Tirok",
@@ -26,7 +28,8 @@ const characters = [
     enra: [
       { value: 1537, context: "After getting his wish for power" },
       { value: 1, context: "Since birth" }
-    ]
+    ],
+    forms: []
   },
   {
     name: "Osin",
@@ -39,14 +42,16 @@ const characters = [
       { value: 630, context: "After Squad 2 Invasion is over" },
       { value: 570, context: "During Squad 2 Invasion" },
       { value: 313, context: "In creation" }
-    ]
+    ],
+    forms: ["Calm Super", "Hyper Form", "Hyper Rage Form"]
   },
   {
     name: "Crepode",
     description: "Famous creator of the Fuerza technique used by Sinco",
     enra: [
       { value: 453, context: "Since Sinco met him" }
-    ]
+    ],
+    forms: []
   },
   {
     name: "Docaci",
@@ -55,7 +60,8 @@ const characters = [
     enra: [
       { value: 287, context: "Before her powers were drained" },
       { value: 12, context: "After her powers were drained" }
-    ]
+    ],
+    forms: ["Calm Super"]
   },
   {
     name: "Karo",
@@ -65,7 +71,8 @@ const characters = [
       { value: 416, context: "After going super for the first time" },
       { value: 334, context: "After getting speedster powers", formBaseEnra: true },
       { value: 2, context: "Before getting speedster powers" }
-    ]
+    ],
+    forms: ["Super"]
   }
 ];
 
