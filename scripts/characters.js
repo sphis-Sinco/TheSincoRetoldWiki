@@ -282,3 +282,14 @@ function generateExportJSON(includeForms = true) {
   link.click();
   document.body.removeChild(link);
 }
+
+// On DOM ready
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("downloadWithForms").addEventListener("click", () => generateExportJSON(true));
+  document.getElementById("downloadWithoutForms").addEventListener("click", () => generateExportJSON(false));
+
+  // other init code
+  renderCharacters(characters);
+  document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
+  document.getElementById("resetFiltersBtn").addEventListener("click", resetFilters);
+});
