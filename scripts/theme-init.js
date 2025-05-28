@@ -1,8 +1,14 @@
 // theme-init.js
+
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme') || 'light';
   const darkThemeClass = 'dark-theme';
   const toggleButton = document.getElementById('theme-toggle');
+
+  if (!toggleButton) {
+    console.warn("Theme toggle button not found!");
+    return;
+  }
 
   if (savedTheme === 'dark') {
     document.body.classList.add(darkThemeClass);
