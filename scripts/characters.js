@@ -67,15 +67,33 @@ function renderCharacters() {
       `;
     }
 
-    // Variations section if present
-    if (char.variations && char.variations.length) {
-      card.innerHTML += `
-        <div class="variation-section">
-          <p><strong>Variations:</strong></p>
-          ${char.variations.map(v => `<p>• ${v}</p>`).join("")}
-        </div>
-      `;
-    }
+    // Variations section if present and are full character objects
+if (char.variations && char.variations.length) {
+  card.innerHTML += `
+    <div class="variation-section">
+      <p><strong>Variations:</strong></p>
+      ${char.variations.map(variation => {
+        const baseReading = getFormBaseEnra(variation);
+        const variationFormsHTML = (variation.forms && variation.enra && variation.forms.length)
+          ? getFormPowers(baseReading.value, variation.forms)
+              .map(line => `<p style="margin-left:1em;">→ ${line}</p>`)
+              .join("")
+          : "";
+
+        return `
+          <div class="variation-card" style="margin-left:1em; margin-bottom:1em; border-left: 2px solid #ccc; padding-left: 1em;">
+            <p><strong>${variation.name}</strong></p>
+            <p>${variation.description}</p>
+            <div class="enra-section">
+              ${variation.enra.map(e => `<p>• ${e.value} — "${e.context}"</p>`).join("")}
+            </div>
+            ${variationFormsHTML}
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
 
     container.appendChild(card);
   });
