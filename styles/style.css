@@ -103,3 +103,21 @@ footer {
   align-items: center;
   justify-content: center;
 }
+
+button {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  border: 1px solid #333;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  margin: 0.5rem;
+}
+
+button:hover {
+  background-color: #333;
+  transform: translateY(-3px);
+}
