@@ -176,48 +176,45 @@ function renderCharacters() {
   });
 }
 
-// Export to JSON
+// Assume characters is a global array of character data
+// Example: const characters = [ { name: 'Sinco', enra: 120, forms: [...] }, ... ];
+
 function generateExportJSON(includeForms = true) {
-  const exportData = characters.map(char => {
-    const base = getFormBaseEnra(char);
-    const forms = {};
-
-    if (includeForms && char.forms && char.forms.length > 0) {
-      char.forms.forEach(formName => {
-        const formData = allFormMultipliers[formName];
-        if (formData) {
-          forms[formName] = {
-            enra: +(base.value * formData.multiplier).toFixed(2),
-            multiplier: formData.multiplier,
-            description: formData.description
-          };
-        }
-      });
-    }
-
-    return {
-      name: char.name,
-      description: char.description,
-      birthday: char.birthday || undefined,
-      baseEnra: base.value,
-      baseEnraContext: base.context,
-      forms
+  return JSON.stringify(characters.map(character => {
+    const result = {
+      name: character.name,
+      description: character.description,
+      enra: character.enra,
     };
-  });
-
-  return JSON.stringify(exportData, null, 2);
+    if (includeForms) {
+      result.forms = character.forms || [];
+    }
+    return result;
+  }), null, 2);
 }
 
-// Setup on DOM load
-document.addEventListener("DOMContentLoaded", () => {
-  renderCharacters();
+function downloadJSON(data, filename) {
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 
-  const exportBtn = document.getElementById("export-json-btn");
-  if (exportBtn) {
-    exportBtn.addEventListener("click", () => {
-      const json = generateExportJSON(true);
-      console.log(json);
-      alert("Exported JSON logged to console.");
-    });
-  }
+document.addEventListener("DOMContentLoaded", () => {
+  renderCharacters(); // Your existing function to display characters
+
+  document.getElementById("downloadWithForms").addEventListener("click", () => {
+    const json = generateExportJSON(true);
+    downloadJSON(json, "characters_with_forms.json");
+  });
+
+  document.getElementById("downloadWithoutForms").addEventListener("click", () => {
+    const json = generateExportJSON(false);
+    downloadJSON(json, "characters_without_forms.json");
+  });
 });
