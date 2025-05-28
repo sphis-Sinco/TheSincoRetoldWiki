@@ -1,121 +1,24 @@
-// Characters array with forms included inside each character object
-const characters = [
-  {
-    name: "Sinco",
-    description: "Teenage Speedster Hero of Tempo City",
-    birthday: "2011-09-19",
-    enra: [
-      { value: 1080, context: "After training in the afterlife with Karo" },
-      { value: 487, context: "Before afterlife training" },
-      { value: 380, context: "After training with Crepode for the first time" },
-      { value: 295, context: "Before training with Crepode for the first time" }
-    ],
-    forms: ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
-    variations: []
-  },
-  {
-    name: "TJ",
-    description: "Teenage Speedster Hero of Boredom City",
-    birthday: "2011-04-03",
-    enra: [
-      { value: 320, context: "After gaining powers" },
-      { value: 10, context: "Before gaining powers" }
-    ],
-    forms: ["Calm Super"],
-    variations: []
-  },
-  {
-    name: "Tirok",
-    description: "Anti-Hero engineer and scientist",
-    birthday: "2000-04-05",
-    enra: [
-      { value: 1537, context: "After getting his wish for power" },
-      { value: 1, context: "Since birth" }
-    ],
-    forms: [],
-    variations: []
-  },
-  {
-    name: "Osin",
-    description: "A clone of Sinco made by Tirok",
-    birthday: "2023-10-08",
-    enra: [
-      { value: 1257, context: "Rage Boost power during Titan-T arc (Volume 4)" },
-      { value: 1020, context: "Resting power during Titan-T arc (Volume 4)", formBaseEnra: true },
-      { value: 855, context: "During Squad 2 Invasion with a Rage boost" },
-      { value: 630, context: "After Squad 2 Invasion is over" },
-      { value: 570, context: "During Squad 2 Invasion" },
-      { value: 313, context: "In creation" }
-    ],
-    forms: ["Calm Super", "Hyper Form", "Hyper Rage Form"],
-    variations: []
-  },
-  {
-    name: "Crepode",
-    description: "Famous creator of the Fuerza technique used by Sinco",
-    enra: [
-      { value: 453, context: "Since Sinco met him" }
-    ],
-    forms: [],
-    variations: []
-  },
-  {
-    name: "Docaci",
-    description: "Speedster mother of Sinco, got her powers drained by Tirok",
-    birthday: "1993-03-14",
-    enra: [
-      { value: 287, context: "Before her powers were drained" },
-      { value: 12, context: "After her powers were drained" }
-    ],
-    forms: ["Calm Super"],
-    variations: []
-  },
-  {
-    name: "Karo",
-    description: "Speedster grandfather of Sinco, the reason Docaci and Sinco are speedsters, Karo is the first person to go super on earth",
-    birthday: "1974-06-23",
-    enra: [
-      { value: 416, context: "After going super for the first time" },
-      { value: 334, context: "After getting speedster powers", formBaseEnra: true },
-      { value: 2, context: "Before getting speedster powers" }
-    ],
-    forms: ["Super"],
-    variations: []
-  }
-];
+import { characters, allFormMultipliers } from './charactersData.js';
 
-// Form multipliers without descriptions for cleaner JSON
-const allFormMultipliers = {
-  "Super": 1.10,
-  "Calm Super": 1.05,
-  "Super Grade 2": 1.20,
-  "Fury Form": 1.40,
-  "Hyper Form": 1.70,
-  "Hyper Rage Form": 1.90,
-  "Hyper Remnant": 1.50
-};
-
-// Find base Enra (for future use, currently not used directly in rendering)
+// Function to get the base Enra reading for forms
 function getFormBaseEnra(char) {
   const explicit = char.enra.find(e => e.formBaseEnra);
   if (explicit) return explicit;
   if (!char.enra || char.enra.length === 0) return { value: 0, context: "No Enra data available" };
-  // Return the max Enra reading by value
   return char.enra.reduce((a, b) => (a.value > b.value ? a : b));
 }
 
-// Calculate power values for each form based on base Enra value and allowed forms
+// Generate form powers based on base Enra and allowed forms
 function getFormPowers(baseValue, allowedForms) {
   return allowedForms.map(formName => {
     const multiplier = allFormMultipliers[formName];
     if (!multiplier) return `${formName}: Unknown multiplier`;
-
     const power = (baseValue * multiplier).toFixed(2);
     return `${formName} (${multiplier}x): ${power} Enra`;
   });
 }
 
-// Render all character cards into the container element with id "character-list"
+// Render characters into the container
 function renderCharacters() {
   const container = document.getElementById("character-list");
   if (!container) {
@@ -129,107 +32,49 @@ function renderCharacters() {
     card.className = "character-card";
 
     // Name & Description
-    const nameElem = document.createElement("h3");
-    nameElem.textContent = char.name;
-    card.appendChild(nameElem);
+    card.innerHTML = `
+      <h3>${char.name}</h3>
+      <p>${char.description}</p>
+      ${char.birthday ? `<p>Birthday: ${char.birthday}</p>` : ""}
+      <div class="enra-section">
+        <p><strong>All Enra Readings:</strong></p>
+        ${char.enra.map(e => `<p>• ${e.value} — "${e.context}"</p>`).join("")}
+      </div>
+    `;
 
-    const desc = document.createElement("p");
-    desc.textContent = char.description;
-    card.appendChild(desc);
+    // Form Variations only for the base Enra reading
+    if (char.forms && char.forms.length && char.enra && char.enra.length) {
+      const baseReading = getFormBaseEnra(char);
+      const variationsHTML = getFormPowers(baseReading.value, char.forms)
+        .map(line => `<p>→ ${line}</p>`)
+        .join("");
 
-    // Birthday (if present)
-    if (char.birthday) {
-      const bday = document.createElement("p");
-      bday.textContent = `Birthday: ${char.birthday}`;
-      card.appendChild(bday);
+      card.innerHTML += `
+        <div class="form-footnote">
+          <p><strong>Form Variations for Base Enra Reading:</strong></p>
+          <p style="margin-top:0.5em; font-weight:bold;">
+            <u>${baseReading.context} (${baseReading.value} Enra):</u>
+          </p>
+          ${variationsHTML}
+        </div>
+      `;
     }
 
-    // ENRA Readings Section
-    if (char.enra && char.enra.length > 0) {
-      const enraSection = document.createElement("div");
-      enraSection.className = "enra-section";
-
-      const enraHeader = document.createElement("p");
-      enraHeader.innerHTML = `<strong>All Enra Readings:</strong>`;
-      enraSection.appendChild(enraHeader);
-
-      char.enra.forEach(reading => {
-        const readingText = document.createElement("p");
-        readingText.textContent = `• ${reading.value} — "${reading.context}"`;
-        enraSection.appendChild(readingText);
-      });
-
-      card.appendChild(enraSection);
-    }
-
-    // FORM VARIATIONS Section (show calculated powers only for the base Enra reading)
-    if (char.forms && char.forms.length > 0 && char.enra && char.enra.length > 0) {
-      // Find the base Enra reading with formBaseEnra = true
-      let baseReading = char.enra.find(e => e.formBaseEnra);
-
-      // If no explicit base reading, optionally use the max value reading:
-      if (!baseReading) {
-        baseReading = char.enra.reduce((a, b) => (a.value > b.value ? a : b));
-      }
-
-      const formSection = document.createElement("div");
-      formSection.className = "form-footnote";
-
-      const formHeader = document.createElement("p");
-      formHeader.innerHTML = `<strong>Form Variations for Base Enra Reading:</strong>`;
-      formSection.appendChild(formHeader);
-
-      const label = document.createElement("p");
-      label.style.marginTop = "0.5em";
-      label.style.fontWeight = "bold";
-      label.innerHTML = `<u>${baseReading.context} (${baseReading.value} Enra):</u>`;
-      formSection.appendChild(label);
-
-      const variationLines = getFormPowers(baseReading.value, char.forms);
-      variationLines.forEach(line => {
-        const p = document.createElement("p");
-        p.textContent = "→ " + line;
-        formSection.appendChild(p);
-      });
-
-      card.appendChild(formSection);
-    }
-
-    // VARIATIONS Section
-    if (char.variations && char.variations.length > 0) {
-      const variationSection = document.createElement("div");
-      variationSection.className = "variation-section";
-
-      const variationHeader = document.createElement("p");
-      variationHeader.innerHTML = `<strong>Variations:</strong>`;
-      variationSection.appendChild(variationHeader);
-
-      char.variations.forEach(variation => {
-        const variationText = document.createElement("p");
-        variationText.textContent = `• ${variation}`;
-        variationSection.appendChild(variationText);
-      });
-
-      card.appendChild(variationSection);
+    // Variations section if present
+    if (char.variations && char.variations.length) {
+      card.innerHTML += `
+        <div class="variation-section">
+          <p><strong>Variations:</strong></p>
+          ${char.variations.map(v => `<p>• ${v}</p>`).join("")}
+        </div>
+      `;
     }
 
     container.appendChild(card);
   });
 }
 
-// Generate JSON export with options to include forms and variations
-function generateExportJSON(includeForms = true, includeVariations = true) {
-  return JSON.stringify(characters.map(character => {
-    const result = {
-      name: character.name,
-      description: character.description,
-      enra: character.enra,
-    };
-    if (includeForms) {
-      result.forms = character.forms || [];
-    }
-    if (includeVariations) {
-      result.variations = character.variations || [];
-    }
-    return result;
-  }), null,
+// Run render after DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  renderCharacters();
+});
