@@ -1,7 +1,7 @@
 // Form multipliers map stays as-is for easy updating
 export const allFormMultipliers = {
   Super: 1.10,
-  CalmSuper: 1.05,
+  "Calm Super": 1.05,
   SuperGrade2: 1.20,
   FuryForm: 1.40,
   HyperForm: 1.70,
@@ -14,7 +14,7 @@ export const allFormMultipliers = {
  */
 export const FormNames = Object.freeze({
   SUPER: "Super",
-  CALM_SUPER: "CalmSuper",
+  CALM_SUPER: "Calm Super",
   SUPER_GRADE_2: "SuperGrade2",
   FURY_FORM: "FuryForm",
   HYPER_FORM: "HyperForm",
