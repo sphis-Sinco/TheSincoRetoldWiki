@@ -1,26 +1,51 @@
 // Form multipliers map stays as-is for easy updating
 export const allFormMultipliers = {
-  "Super": 1.10,
-  "Calm Super": 1.05,
-  "Super Grade 2": 1.20,
-  "Fury Form": 1.40,
-  "Hyper Form": 1.70,
-  "Hyper Rage Form": 1.90,
-  "Hyper Remnant": 1.50
+  Super: 1.10,
+  CalmSuper: 1.05,
+  SuperGrade2: 1.20,
+  FuryForm: 1.40,
+  HyperForm: 1.70,
+  HyperRageForm: 1.90,
+  HyperRemnant: 1.50,
 };
+
+/**
+ * Enum of valid form names to avoid magic strings and typos.
+ */
+export const FormNames = Object.freeze({
+  SUPER: "Super",
+  CALM_SUPER: "Calm Super",
+  SUPER_GRADE_2: "Super Grade 2",
+  FURY_FORM: "Fury Form",
+  HYPER_FORM: "Hyper Form",
+  HYPER_RAGE_FORM: "Hyper Rage Form",
+  HYPER_REMNANT: "Hyper Remnant",
+});
 
 /**
  * Helper: generate enra readings array
  * 
- * @param {Array} readings Array of tuples [value, context, isBase?]
- * @returns {Array} enra objects
+ * @param {Array.<[number, string, boolean]>} readings Array of tuples [value, context, isBase?]
+ * @returns {Array.<{value: number, context: string, formBaseEnra?: boolean}>} enra objects
  */
 function generateEnra(readings) {
   return readings.map(([value, context, formBaseEnra = false]) => ({
     value,
     context,
-    ...(formBaseEnra ? { formBaseEnra: true } : {})
+    ...(formBaseEnra ? { formBaseEnra: true } : {}),
   }));
+}
+
+/**
+ * Simple ISO 8601 date validation
+ * @param {string|null} dateStr
+ * @returns {boolean}
+ */
+function isValidDate(dateStr) {
+  if (dateStr === null) return true;
+  if (typeof dateStr !== "string") return false;
+  const date = new Date(dateStr);
+  return !isNaN(date.getTime()) && dateStr === date.toISOString().slice(0, 10);
 }
 
 /**
@@ -28,41 +53,87 @@ function generateEnra(readings) {
  * 
  * @param {string} name
  * @param {string} description
- * @param {string} birthday  - YYYY-MM-DD
- * @param {Array} enraReadings - array of tuples [value, context, formBaseEnra?]
- * @param {Array} forms - array of form names (strings)
- * @param {Array} variations - array of variations (optional)
+ * @param {string|null} birthday  - ISO date string YYYY-MM-DD or null if unknown
+ * @param {Array.<[number, string, boolean?]>} enraReadings - array of tuples [value, context, formBaseEnra?]
+ * @param {string[]} forms - array of form names (strings)
+ * @param {object[]} variations - array of character variations (optional)
  * @returns {object} character profile
+ * @throws {Error} on invalid input
  */
 export function createCharacter(name, description, birthday, enraReadings, forms = [], variations = []) {
+  // Validation
+  if (typeof name !== "string" || name.trim() === "") {
+    throw new Error("Character name must be a non-empty string");
+  }
+  if (typeof description !== "string") {
+    throw new Error("Character description must be a string");
+  }
+  if (!isValidDate(birthday)) {
+    throw new Error(`Invalid birthday date format: ${birthday}`);
+  }
+  if (!Array.isArray(enraReadings)) {
+    throw new Error("enraReadings must be an array");
+  }
+  enraReadings.forEach((item, idx) => {
+    if (
+      !Array.isArray(item) ||
+      typeof item[0] !== "number" ||
+      typeof item[1] !== "string" ||
+      (item[2] !== undefined && typeof item[2] !== "boolean")
+    ) {
+      throw new Error(`Invalid enraReadings tuple at index ${idx}`);
+    }
+  });
+  if (!Array.isArray(forms)) {
+    throw new Error("forms must be an array");
+  }
+  forms.forEach((form, idx) => {
+    if (typeof form !== "string") {
+      throw new Error(`Invalid form name at index ${idx}`);
+    }
+  });
+  if (!Array.isArray(variations)) {
+    throw new Error("variations must be an array");
+  }
+  variations.forEach((variation, idx) => {
+    if (typeof variation !== "object" || variation === null) {
+      throw new Error(`Invalid variation at index ${idx}`);
+    }
+  });
+
   return {
     name,
     description,
     birthday,
     enra: generateEnra(enraReadings),
     forms,
-    variations
+    variations,
   };
 }
 
-// Now export the characters array with simple calls
+// Export characters array using the helper and enum constants for forms
 export const characters = [
   createCharacter(
     "Sinco",
     "Teenage Speedster Hero of Tempo City",
     "2011-09-19",
+    [[1080, "After training in the afterlife with Karo"]],
     [
-      [1080, "After training in the afterlife with Karo"]
+      FormNames.SUPER,
+      FormNames.CALM_SUPER,
+      FormNames.SUPER_GRADE_2,
+      FormNames.FURY_FORM,
+      FormNames.HYPER_FORM,
+      FormNames.HYPER_REMNANT,
     ],
-    ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
     [
       createCharacter(
         "Sinco (Timeline V5B)",
         "Sinco months later after failing to make his wish in the Titan-T saga",
         "2011-09-19",
         [],
-        ["Hyper Form"]
-      )
+        [FormNames.HYPER_FORM]
+      ),
     ]
   ),
 
@@ -71,7 +142,7 @@ export const characters = [
     "Teenage Speedster Hero of Boredom City",
     "2011-04-03",
     [],
-    ["Calm Super"]
+    [FormNames.CALM_SUPER]
   ),
 
   createCharacter(
@@ -89,9 +160,9 @@ export const characters = [
       [1257, "Rage Boost power during Titan-T arc (Volume 4)"],
       [1020, "Resting power during Titan-T arc (Volume 4)", true],
       [855, "During Squad 2 Invasion with a Rage boost"],
-      [570, "During Squad 2 Invasion"]
+      [570, "During Squad 2 Invasion"],
     ],
-    ["Calm Super", "Hyper Form", "Hyper Rage Form"]
+    [FormNames.CALM_SUPER, FormNames.HYPER_FORM, FormNames.HYPER_RAGE_FORM]
   ),
 
   createCharacter(
@@ -106,7 +177,7 @@ export const characters = [
     "Speedster mother of Sinco, got her powers drained by Tirok",
     "1993-03-14",
     [],
-    ["Calm Super"]
+    [FormNames.CALM_SUPER]
   ),
 
   createCharacter(
@@ -114,6 +185,6 @@ export const characters = [
     "Speedster grandfather of Sinco, the reason Docaci and Sinco are speedsters, Karo is the first person to go super on earth",
     "1974-06-23",
     [],
-    ["Super"]
-  )
+    [FormNames.SUPER]
+  ),
 ];
