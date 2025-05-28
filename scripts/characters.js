@@ -1,5 +1,11 @@
 import { characters, allFormMultipliers } from './charactersData.js';
 
+// Format Enra values by removing unnecessary decimals
+function formatEnraValue(value) {
+  if (Number.isInteger(value)) return value.toString();
+  return parseFloat(value.toFixed(2)).toString();
+}
+
 // Function to get the base Enra reading for forms
 function getFormBaseEnra(char) {
   const explicit = char.enra.find(e => e.formBaseEnra);
@@ -13,7 +19,8 @@ function getFormPowers(baseValue, allowedForms) {
   return allowedForms.map(formName => {
     const multiplier = allFormMultipliers[formName];
     if (!multiplier) return `${formName}: Unknown multiplier`;
-    const power = (baseValue * multiplier).toFixed(2);
+    const powerRaw = baseValue * multiplier;
+    const power = formatEnraValue(powerRaw);
     return `${formName} (${multiplier}x): ${power} Enra`;
   });
 }
@@ -38,7 +45,7 @@ function renderCharacters() {
       ${char.birthday ? `<p>Birthday: ${char.birthday}</p>` : ""}
       <div class="enra-section">
         <p><strong>All Enra Readings:</strong></p>
-        ${char.enra.map(e => `<p>• ${e.value} — "${e.context}"</p>`).join("")}
+        ${char.enra.map(e => `<p>• ${formatEnraValue(e.value)} — "${e.context}"</p>`).join("")}
       </div>
     `;
 
@@ -53,7 +60,7 @@ function renderCharacters() {
         <div class="form-footnote">
           <p><strong>Form Variations for Base Enra Reading:</strong></p>
           <p style="margin-top:0.5em; font-weight:bold;">
-            <u>${baseReading.context} (${baseReading.value} Enra):</u>
+            <u>${baseReading.context} (${formatEnraValue(baseReading.value)} Enra):</u>
           </p>
           ${variationsHTML}
         </div>
