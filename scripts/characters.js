@@ -4,150 +4,197 @@ const characterList = document.getElementById('character-list');
 const downloadWithFormsBtn = document.getElementById('downloadWithForms');
 const downloadWithoutFormsBtn = document.getElementById('downloadWithoutForms');
 
-// Add explanation note to the page
-const note = document.createElement('p');
-note.textContent = 'Note: Form Enra calculations are based on predefined form multipliers.';
-note.classList.add('form-note');
-characterList.parentNode.insertBefore(note, characterList);
+// Defensive DOM checks
+if (!characterList) {
+  console.error('Error: #character-list element not found');
+} 
+if (!downloadWithFormsBtn || !downloadWithoutFormsBtn) {
+  console.error('Error: One or both download buttons not found');
+}
 
-// Helper: Create Enra display section
-function renderEnra(enraArray) {
-  const container = document.createElement('ul');
-  container.classList.add('enra-list');
-  enraArray.forEach(({ value, context, formBaseEnra }) => {
-    const item = document.createElement('li');
-    item.textContent = `${value} - ${context}`;
-    if (formBaseEnra) {
-      item.textContent += ' (Form Base Enra)';
-    }
+/**
+ * Render Enra readings for a character.
+ * @param {Array} enra Array of enra reading objects
+ * @returns {HTMLElement}
+ */
+function renderEnra(enra) {
+  const container = document.createElement('div');
+  container.setAttribute('role', 'list');
+  if (!enra || enra.length === 0) {
+    const noDataMsg = document.createElement('p');
+    noDataMsg.textContent = "No Enra readings available for this character.";
+    container.appendChild(noDataMsg);
+    return container;
+  }
+  enra.forEach(({ value, context, formBaseEnra }) => {
+    const item = document.createElement('div');
+    item.setAttribute('role', 'listitem');
+    item.textContent = `${value} (Context: ${context}${formBaseEnra ? ", Base Form Enra" : ""})`;
     container.appendChild(item);
   });
   return container;
 }
 
-// Helper: Create Forms display with multiplier info
+/**
+ * Render forms and multipliers info.
+ * @param {Array} forms Array of form names
+ * @returns {HTMLElement}
+ */
 function renderForms(forms) {
-  const container = document.createElement('ul');
-  container.classList.add('form-list');
-  forms.forEach((form) => {
-    const item = document.createElement('li');
-    const multiplier = allFormMultipliers[form];
-    item.textContent = multiplier
-      ? `${form} (x${multiplier.toFixed(2)} multiplier)`
-      : form;
-    container.appendChild(item);
+  const container = document.createElement('div');
+  container.setAttribute('aria-label', 'Character Forms and multipliers');
+  if (!forms || forms.length === 0) {
+    // No forms to display, return empty container
+    return container;
+  }
+  const info = document.createElement('p');
+  info.textContent = "Form Enra calculations are based on the multipliers below.";
+  container.appendChild(info);
+
+  const list = document.createElement('ul');
+  forms.forEach(form => {
+    const listItem = document.createElement('li');
+    const multiplier = allFormMultipliers[form] ?? 'Unknown multiplier';
+    listItem.textContent = `${form}: ×${multiplier}`;
+    list.appendChild(listItem);
   });
+  container.appendChild(list);
   return container;
 }
 
-// Helper: Create Download Button
-function createDownloadButton(label, characterData) {
-  const btn = document.createElement('button');
-  btn.textContent = label;
-  btn.addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(characterData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${characterData.name}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  });
-  return btn;
+/**
+ * Creates and triggers download of JSON data.
+ * Cleans up created elements after download.
+ * @param {object} data Data to be downloaded
+ * @param {string} filename Name of the file
+ */
+function downloadJSON(data, filename) {
+  const jsonStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a); // Clean up anchor
+  URL.revokeObjectURL(url); // Release blob URL
 }
 
-// Render each character
-characters.forEach((character) => {
-  const card = document.createElement('div');
-  card.classList.add('character-card');
+/**
+ * Validates a character object to ensure required properties are present.
+ * @param {object} character
+ * @returns {boolean}
+ */
+function validateCharacter(character) {
+  if (!character || typeof character !== 'object') return false;
+  if (typeof character.name !== 'string') return false;
+  if (!Array.isArray(character.enra)) return false;
+  // Add further validation as needed
+  return true;
+}
 
-  const name = document.createElement('h2');
-  name.textContent = character.name;
+/**
+ * Render all characters in the DOM.
+ * Uses DocumentFragment for better performance.
+ */
+function renderCharacters() {
+  if (!characterList) return;
+  characterList.innerHTML = ''; // Clear existing content
 
-  const desc = document.createElement('p');
-  desc.textContent = character.description;
+  const fragment = document.createDocumentFragment();
 
-  const birthday = document.createElement('p');
-  birthday.textContent = character.birthday
-    ? `Born: ${character.birthday}`
-    : 'Birthday: Unknown';
-
-  const enraHeader = document.createElement('h3');
-  enraHeader.textContent = 'Enra Readings';
-
-  card.appendChild(name);
-  card.appendChild(desc);
-  card.appendChild(birthday);
-  card.appendChild(enraHeader);
-
-  if (character.enra.length > 0) {
-    card.appendChild(renderEnra(character.enra));
-
-    if (character.forms?.length) {
-      const formsHeader = document.createElement('h3');
-      formsHeader.textContent = 'Forms';
-      card.appendChild(formsHeader);
-      card.appendChild(renderForms(character.forms));
+  characters.forEach(character => {
+    if (!validateCharacter(character)) {
+      console.warn(`Invalid character data skipped: ${character?.name || '[Unnamed]'}`);
+      return;
     }
-  } else {
-    const noEnraMsg = document.createElement('p');
-    noEnraMsg.textContent = 'No Enra readings available for this character.';
-    card.appendChild(noEnraMsg);
+
+    const charDiv = document.createElement('div');
+    charDiv.classList.add('character-profile');
+    charDiv.setAttribute('role', 'article');
+    charDiv.setAttribute('aria-label', `Profile for ${character.name}`);
+
+    const nameEl = document.createElement('h3');
+    nameEl.textContent = character.name;
+    charDiv.appendChild(nameEl);
+
+    if (character.description) {
+      const descEl = document.createElement('p');
+      descEl.textContent = character.description;
+      charDiv.appendChild(descEl);
+    }
+
+    const birthdayEl = document.createElement('p');
+    birthdayEl.textContent = character.birthday ? `Birthday: ${character.birthday}` : 'Birthday unknown';
+    charDiv.appendChild(birthdayEl);
+
+    charDiv.appendChild(renderEnra(character.enra));
+
+    if (character.enra.length > 0 && character.forms?.length > 0) {
+      charDiv.appendChild(renderForms(character.forms));
+    }
+
+    // Render variations recursively (if any)
+    if (character.variations?.length > 0) {
+      const varSection = document.createElement('section');
+      varSection.setAttribute('aria-label', `Variations of ${character.name}`);
+      character.variations.forEach(variation => {
+        varSection.appendChild(renderCharacterSummary(variation));
+      });
+      charDiv.appendChild(varSection);
+    }
+
+    fragment.appendChild(charDiv);
+  });
+
+  characterList.appendChild(fragment);
+}
+
+/**
+ * Helper to render character summary for variations.
+ * @param {object} character
+ * @returns {HTMLElement}
+ */
+function renderCharacterSummary(character) {
+  const div = document.createElement('div');
+  div.classList.add('character-variation');
+  div.setAttribute('role', 'article');
+  div.setAttribute('aria-label', `Variation profile for ${character.name}`);
+
+  const nameEl = document.createElement('h4');
+  nameEl.textContent = character.name;
+  div.appendChild(nameEl);
+
+  if (character.description) {
+    const descEl = document.createElement('p');
+    descEl.textContent = character.description;
+    div.appendChild(descEl);
   }
 
-  // Add variations (if any)
-  if (character.variations?.length) {
-    const variationsHeader = document.createElement('h3');
-    variationsHeader.textContent = 'Variations';
-    card.appendChild(variationsHeader);
-    character.variations.forEach(variation => {
-      const subCard = document.createElement('div');
-      subCard.classList.add('variation-card');
-      const subTitle = document.createElement('h4');
-      subTitle.textContent = variation.name;
-      const subDesc = document.createElement('p');
-      subDesc.textContent = variation.description;
-      subCard.appendChild(subTitle);
-      subCard.appendChild(subDesc);
-      if (variation.enra.length > 0) {
-        subCard.appendChild(renderEnra(variation.enra));
-        if (variation.forms?.length) {
-          subCard.appendChild(renderForms(variation.forms));
-        }
-      } else {
-        const noSubEnra = document.createElement('p');
-        noSubEnra.textContent = 'No Enra readings available for this variation.';
-        subCard.appendChild(noSubEnra);
-      }
-      card.appendChild(subCard);
-    });
+  div.appendChild(renderEnra(character.enra));
+
+  if (character.enra.length > 0 && character.forms?.length > 0) {
+    div.appendChild(renderForms(character.forms));
   }
 
-  // Add download button
-  const downloadBtn = createDownloadButton('Download Character JSON', character);
-  card.appendChild(downloadBtn);
+  return div;
+}
 
-  characterList.appendChild(card);
-});
+// Download event listeners with defensive checks
+if (downloadWithFormsBtn) {
+  downloadWithFormsBtn.addEventListener('click', () => {
+    downloadJSON(characters, 'characters_with_forms.json');
+  });
+}
 
-// Page-wide Download Buttons
-downloadWithFormsBtn.addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(characters, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'characters_with_forms.json';
-  a.click();
-  URL.revokeObjectURL(url);
-});
+if (downloadWithoutFormsBtn) {
+  downloadWithoutFormsBtn.addEventListener('click', () => {
+    // Remove forms from characters temporarily for this download
+    const charsWithoutForms = characters.map(({ forms, ...rest }) => rest);
+    downloadJSON(charsWithoutForms, 'characters_without_forms.json');
+  });
+}
 
-downloadWithoutFormsBtn.addEventListener('click', () => {
-  const stripped = characters.map(({ forms, ...rest }) => rest);
-  const blob = new Blob([JSON.stringify(stripped, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'characters_without_forms.json';
-  a.click();
-  URL.revokeObjectURL(url);
-});
+// Initial render
+renderCharacters();
