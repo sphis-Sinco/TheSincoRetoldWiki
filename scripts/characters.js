@@ -4,7 +4,6 @@ const characterList = document.getElementById('character-list');
 const downloadWithFormsBtn = document.getElementById('downloadWithForms');
 const downloadWithoutFormsBtn = document.getElementById('downloadWithoutForms');
 
-// Defensive DOM checks
 if (!characterList) {
   console.error('Error: #character-list element not found');
 } 
@@ -36,26 +35,32 @@ function renderEnra(enra) {
 }
 
 /**
- * Render forms and multipliers info.
+ * Render forms and multipliers info with calculated Enra.
  * @param {Array} forms Array of form names
+ * @param {number} baseEnra Base Enra value to multiply
  * @returns {HTMLElement}
  */
-function renderForms(forms) {
+function renderForms(forms, baseEnra) {
   const container = document.createElement('div');
   container.setAttribute('aria-label', 'Character Forms and multipliers');
   if (!forms || forms.length === 0) {
-    // No forms to display, return empty container
     return container;
   }
+
   const info = document.createElement('p');
-  info.textContent = "Form Enra calculations are based on the multipliers below.";
+  info.textContent = "Form Enra calculations based on multipliers:";
   container.appendChild(info);
 
   const list = document.createElement('ul');
   forms.forEach(form => {
+    const multiplier = allFormMultipliers[form];
     const listItem = document.createElement('li');
-    const multiplier = allFormMultipliers[form] ?? 'Unknown multiplier';
-    listItem.textContent = `${form}: ×${multiplier}`;
+    if (typeof multiplier === 'number') {
+      const calculatedEnra = (baseEnra * multiplier).toFixed(2);
+      listItem.textContent = `${form}: ×${multiplier} = ${calculatedEnra} Enra`;
+    } else {
+      listItem.textContent = `${form}: Unknown multiplier`;
+    }
     list.appendChild(listItem);
   });
   container.appendChild(list);
@@ -77,8 +82,8 @@ function downloadJSON(data, filename) {
   a.download = filename;
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a); // Clean up anchor
-  URL.revokeObjectURL(url); // Release blob URL
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 /**
@@ -90,7 +95,6 @@ function validateCharacter(character) {
   if (!character || typeof character !== 'object') return false;
   if (typeof character.name !== 'string') return false;
   if (!Array.isArray(character.enra)) return false;
-  // Add further validation as needed
   return true;
 }
 
@@ -100,7 +104,7 @@ function validateCharacter(character) {
  */
 function renderCharacters() {
   if (!characterList) return;
-  characterList.innerHTML = ''; // Clear existing content
+  characterList.innerHTML = '';
 
   const fragment = document.createDocumentFragment();
 
@@ -132,10 +136,12 @@ function renderCharacters() {
     charDiv.appendChild(renderEnra(character.enra));
 
     if (character.enra.length > 0 && character.forms?.length > 0) {
-      charDiv.appendChild(renderForms(character.forms));
+      // Find base Enra reading: prefer one marked as formBaseEnra, else first
+      const baseEnraReading = character.enra.find(e => e.formBaseEnra) || character.enra[0];
+      const baseEnra = baseEnraReading ? baseEnraReading.value : 0;
+      charDiv.appendChild(renderForms(character.forms, baseEnra));
     }
 
-    // Render variations recursively (if any)
     if (character.variations?.length > 0) {
       const varSection = document.createElement('section');
       varSection.setAttribute('aria-label', `Variations of ${character.name}`);
@@ -175,13 +181,14 @@ function renderCharacterSummary(character) {
   div.appendChild(renderEnra(character.enra));
 
   if (character.enra.length > 0 && character.forms?.length > 0) {
-    div.appendChild(renderForms(character.forms));
+    const baseEnraReading = character.enra.find(e => e.formBaseEnra) || character.enra[0];
+    const baseEnra = baseEnraReading ? baseEnraReading.value : 0;
+    div.appendChild(renderForms(character.forms, baseEnra));
   }
 
   return div;
 }
 
-// Download event listeners with defensive checks
 if (downloadWithFormsBtn) {
   downloadWithFormsBtn.addEventListener('click', () => {
     downloadJSON(characters, 'characters_with_forms.json');
@@ -190,11 +197,9 @@ if (downloadWithFormsBtn) {
 
 if (downloadWithoutFormsBtn) {
   downloadWithoutFormsBtn.addEventListener('click', () => {
-    // Remove forms from characters temporarily for this download
     const charsWithoutForms = characters.map(({ forms, ...rest }) => rest);
     downloadJSON(charsWithoutForms, 'characters_without_forms.json');
   });
 }
 
-// Initial render
 renderCharacters();
