@@ -48,34 +48,29 @@ export function createCharacter(name, description, birthday, enraReadings, forms
 // Now export the characters array with simple calls
 export const characters = [
   createCharacter(
-  "Sinco",
-  "Teenage Speedster Hero of Tempo City",
-  "2011-09-19",
-  [
-    [1080, "After training in the afterlife with Karo"]
-  ],
-  ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
-  [
-    createCharacter(
-      "Sinco (Timeline V5B)",
-      "Sinco months later after failing to make his wish in the Titan-T saga",
-      "2011-09-19",
-      [
-        // [1662, "When coming to Timeline V5A / When creating Timeline V5C"]
-      ],
-      ["Hyper Form"]
-    )
-  ]
-),
+    "Sinco",
+    "Teenage Speedster Hero of Tempo City",
+    "2011-09-19",
+    [
+      [1080, "After training in the afterlife with Karo"]
+    ],
+    ["Super", "Calm Super", "Super Grade 2", "Fury Form", "Hyper Form", "Hyper Remnant"],
+    [
+      createCharacter(
+        "Sinco (Timeline V5B)",
+        "Sinco months later after failing to make his wish in the Titan-T saga",
+        "2011-09-19",
+        [],
+        ["Hyper Form"]
+      )
+    ]
+  ),
 
   createCharacter(
     "TJ",
     "Teenage Speedster Hero of Boredom City",
     "2011-04-03",
-    [
-      // [320, "After gaining powers"],
-      // [10, "Before gaining powers"]
-    ],
+    [],
     ["Calm Super"]
   ),
 
@@ -83,10 +78,7 @@ export const characters = [
     "Tirok",
     "Anti-Hero engineer and scientist",
     "2000-04-05",
-    [
-      // [1537, "After getting his wish for power"],
-      // [1, "Since birth"]
-    ]
+    []
   ),
 
   createCharacter(
@@ -97,9 +89,7 @@ export const characters = [
       [1257, "Rage Boost power during Titan-T arc (Volume 4)"],
       [1020, "Resting power during Titan-T arc (Volume 4)", true],
       [855, "During Squad 2 Invasion with a Rage boost"],
-      // [630, "After Squad 2 Invasion is over"],
-      [570, "During Squad 2 Invasion"],
-      // [313, "In creation"]
+      [570, "During Squad 2 Invasion"]
     ],
     ["Calm Super", "Hyper Form", "Hyper Rage Form"]
   ),
@@ -108,19 +98,14 @@ export const characters = [
     "Crepode",
     "Famous creator of the Fuerza technique used by Sinco",
     null,
-    [
-      // [453, "Since Sinco met him"]
-    ]
+    []
   ),
 
   createCharacter(
     "Docaci",
     "Speedster mother of Sinco, got her powers drained by Tirok",
     "1993-03-14",
-    [
-      // [287, "Before her powers were drained"],
-      // [12, "After her powers were drained"]
-    ],
+    [],
     ["Calm Super"]
   ),
 
@@ -128,11 +113,7 @@ export const characters = [
     "Karo",
     "Speedster grandfather of Sinco, the reason Docaci and Sinco are speedsters, Karo is the first person to go super on earth",
     "1974-06-23",
-    [
-      // [416, "After going super for the first time"],
-      // [334, "After getting speedster powers", true],
-      // [2, "Before getting speedster powers"]
-    ],
+    [],
     ["Super"]
   )
 ];
